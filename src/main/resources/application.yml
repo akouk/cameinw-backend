@@ -1,0 +1,30 @@
+server:
+  # Server port
+  port: ${SERVER_PORT}
+  # SSL properties
+  ssl:
+    enabled: true
+    key-store: classpath:cameinwcert.p12
+    key-store-password: ${SERVER_SSL_STORE_PASSWORD}
+    key-store-type: PKCS12
+    key-alias: cameinw
+    key-password: ${SERVER_SSL_PASSWORD}
+
+spring:
+  # Datasource properties
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    # Hibernate properties
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    # MySQL dialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  jpa.defer-datasource-initialization: false
