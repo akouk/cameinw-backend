@@ -27,12 +27,12 @@ public class UserController {
    // @Autowired
     //private ReviewService reviewService;
 
-    @GetMapping() //CHECK OK
-    public List<User> getAllUsers() {
+    @GetMapping() // ---- check ok -----
+    public List<User> getAllUsers() { // ---- check ok -----
         return userService.getAllUsers();
     }
 
-    @GetMapping("/{user_id}") //CHECK OK
+    @GetMapping("/{user_id}") // ---- check ok -----
     public ResponseEntity<User> getUserById(@PathVariable("user_id") Integer userId) {
         Optional<User> user = userService.getUserById(userId);
         return user
@@ -41,12 +41,12 @@ public class UserController {
     }
 
 
-    @PutMapping("/{user_id}")
-    public ResponseEntity<User> updateUser(@PathVariable("user_id") Integer userId, @RequestBody User updatedUser) {
+    @PutMapping("/{user_id}") // ---- check ok -----
+    public ResponseEntity<String> updateUser(@PathVariable("user_id") Integer userId, @RequestBody User updatedUser) {
         try {
             User updated = userService.updateUser(userId, updatedUser);
             if (updated != null) {
-                return ResponseEntity.ok(updated); // STATUS: 200 OK
+                return ResponseEntity.ok("User with id " + userId + " is updated"); // STATUS: 200 OK
             } else {
                 return ResponseEntity.notFound().build(); // STATUS: 404 Not Found
             }
@@ -55,7 +55,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/{user_id}") //CHECK OK
+    @DeleteMapping("/{user_id}") // ---- check ok -----
     public ResponseEntity<?> deleteUser(@PathVariable("user_id") Integer userId) {
         try {
             userService.deleteUser(userId);
@@ -65,9 +65,8 @@ public class UserController {
         }
     }
 
-    @GetMapping("/users/{user_id}/places")
+    @GetMapping("/{user_id}/places")
     public ResponseEntity<List<PlaceProjection>> getPlacesByUser(@PathVariable("user_id") Integer userId) {
-
         return ResponseEntity.ok(userService.getPlacesByUserId(userId));
     }
 

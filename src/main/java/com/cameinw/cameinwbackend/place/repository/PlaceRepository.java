@@ -1,4 +1,4 @@
-package com.cameinw.cameinwbackend.place;
+package com.cameinw.cameinwbackend.place.repository;
 
 import com.cameinw.cameinwbackend.place.model.Place;
 import com.cameinw.cameinwbackend.place.projection.PlaceProjection;
