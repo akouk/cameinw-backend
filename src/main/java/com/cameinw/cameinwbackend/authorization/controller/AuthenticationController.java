@@ -4,6 +4,8 @@ import com.cameinw.cameinwbackend.authorization.request.LoginRequest;
 import com.cameinw.cameinwbackend.authorization.request.RegisterRequest;
 import com.cameinw.cameinwbackend.authorization.response.AuthenticationResponse;
 import com.cameinw.cameinwbackend.authorization.service.AuthenticationService;
+import com.cameinw.cameinwbackend.exception.ResourceAlreadyExistException;
+import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,10 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> login(
             @RequestBody LoginRequest loginRequest
     ) {
+        // Check if the user exists, if not, throw ResourceNotFoundException
+        if (!userRepository.findByEmail(loginRequest.getEmail()).isPresent()) {
+            throw new ResourceNotFoundException("User not found");
+        }
         return ResponseEntity.ok(authenticationService.login(loginRequest));
     }
 }
