@@ -1,5 +1,6 @@
 package com.cameinw.cameinwbackend.user.model;
 
+import com.cameinw.cameinwbackend.image.model.Image;
 import com.cameinw.cameinwbackend.user.enums.Role;
 import com.cameinw.cameinwbackend.place.model.Place;
 
@@ -73,16 +74,16 @@ public class User implements UserDetails{
 //    @JsonIgnore
 //    private List<Search> searches;
 //
-//    @OneToMany(mappedBy = "sender")
-//    @JsonIgnore
-//    private List<Message> sendedMessages;
-//
-//    @OneToMany(mappedBy = "receiver")
-//    @JsonIgnore
-//    private List<Message> receivedMessages;
+    @OneToMany(mappedBy = "sender")
+    @JsonIgnore
+    private List<Message> sendedMessages;
 
-//    @OneToOne(mappedBy = "user")
-//    private Image image;
+    @OneToMany(mappedBy = "receiver")
+    @JsonIgnore
+    private List<Message> receivedMessages;
+
+    @OneToOne(mappedBy = "user")
+    private Image image;
 
     @Override
     public String toString() {

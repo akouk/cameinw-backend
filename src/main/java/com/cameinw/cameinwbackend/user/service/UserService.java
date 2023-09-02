@@ -11,5 +11,5 @@ public interface UserService {
     Optional<User> getUserById(Integer userId);
     User updateUser(Integer userId, User updatedUser);
     void deleteUser(Integer userId);
-    List<PlaceProjection> getPlacesByUserId(Integer userId);
+    Optional<List<PlaceProjection>> getPlacesByUserId(Integer userId);
 }

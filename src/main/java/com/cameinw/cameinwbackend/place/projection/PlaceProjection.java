@@ -1,5 +1,7 @@
 package com.cameinw.cameinwbackend.place.projection;
 
+import com.cameinw.cameinwbackend.place.enums.PropertyType;
+
 public interface PlaceProjection {
     Integer getId();
     String getName();
@@ -11,5 +13,5 @@ public interface PlaceProjection {
     Integer getBathrooms();
     Integer getBedrooms();
     String getDescription();
-    Enum getPropertyType();
+    Enum<PropertyType> getPropertyType();
 }

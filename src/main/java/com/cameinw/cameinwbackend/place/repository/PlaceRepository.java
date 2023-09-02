@@ -17,10 +17,10 @@ public interface PlaceRepository extends JpaRepository<Place, Integer>{
     List<PlaceProjection> findPlacesByQuery(String country, String city, Integer guests);
 
 
-    @Query(value ="SELECT a.id, a.name, a.country, a.city, a.address, a.cost, a.guests, a.bedrooms, a.bathrooms, a.propertytype, a.description " +
+    @Query(value ="SELECT a.id, a.name, a.country, a.city, a.address, a.cost, a.guests, a.bedrooms, a.bathrooms, a.type, a.description " +
             "FROM places a " +
             "WHERE a.user_id = ?1 ", nativeQuery = true)
-    List<PlaceProjection> findPlacesByUserId(Integer userId);
+    Optional<List<PlaceProjection>> findPlacesByUserId(Integer userId);
 
     @Query(value ="SELECT a " +
             "FROM Place a " +

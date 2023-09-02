@@ -62,7 +62,12 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public List<PlaceProjection> getPlacesByUserId(Integer userId) {
-        return placeRepository.findPlacesByUserId(userId);
+    public Optional<List<PlaceProjection>> getPlacesByUserId(Integer userId) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isPresent()) {
+            return placeRepository.findPlacesByUserId(userId);
+        } else {
+            throw new ResourceNotFoundException("User with ID " + userId + " not found.");
+        }
     }
 }

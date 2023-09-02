@@ -1,6 +1,6 @@
 package com.cameinw.cameinwbackend;
 
-import com.cameinw.cameinwbackend.utilities.ImageHandler;
+import com.cameinw.cameinwbackend.image.utils.ImageHandler;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;

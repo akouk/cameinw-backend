@@ -24,7 +24,7 @@ public class PlaceController {
 
     private final PlaceRepository placeRepository;
 
-    @GetMapping()  //---- check ok -----
+    @GetMapping("/")  //---- check ok -----
     public List<Place> getAllPlaces() {
         return placeService.getAllPlaces();
     }
@@ -38,7 +38,7 @@ public class PlaceController {
                 .orElseGet(() -> ResponseEntity.notFound().build()); // STATUS: 404 Not Found
     }
 
-    @PostMapping() //---- check ok -----
+    @PostMapping("/") //---- check ok -----
     public ResponseEntity<String> createPlace(@RequestBody PlaceRequest placeRequest) {
         try {
             Place createdPlace = placeService.createPlace(placeRequest);

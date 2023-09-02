@@ -5,15 +5,11 @@ import com.cameinw.cameinwbackend.place.projection.PlaceProjection;
 import com.cameinw.cameinwbackend.user.model.User;
 import com.cameinw.cameinwbackend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +23,7 @@ public class UserController {
    // @Autowired
     //private ReviewService reviewService;
 
-    @GetMapping() // ---- check ok -----
+    @GetMapping("/") // ---- check ok -----
     public List<User> getAllUsers() { // ---- check ok -----
         return userService.getAllUsers();
     }
@@ -66,8 +62,13 @@ public class UserController {
     }
 
     @GetMapping("/{user_id}/places")
-    public ResponseEntity<List<PlaceProjection>> getPlacesByUser(@PathVariable("user_id") Integer userId) {
-        return ResponseEntity.ok(userService.getPlacesByUserId(userId));
+    public ResponseEntity<?> getPlacesByUserId(@PathVariable("user_id") Integer userId) {
+        try {
+            List<PlaceProjection> places = userService.getPlacesByUserId(userId).orElse(Collections.emptyList());
+            return ResponseEntity.ok(places); // STATUS: 200 OK
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found."); // STATUS: 404 Not Found
+        }
     }
 
 //    @GetMapping("/{user_id}/reviews") //CHECK OK

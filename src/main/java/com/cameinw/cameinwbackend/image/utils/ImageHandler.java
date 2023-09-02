@@ -1,7 +1,8 @@
-package com.cameinw.cameinwbackend.utilities;
+package com.cameinw.cameinwbackend.image.utils;
 
 import com.cameinw.cameinwbackend.user.model.User;
 import com.cameinw.cameinwbackend.place.model.Place;
+import com.cameinw.cameinwbackend.utilities.FileUtils;
 import lombok.Getter;
 
 import java.io.IOException;
