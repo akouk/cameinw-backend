@@ -44,12 +44,9 @@ public class FacilityServiceImplementation implements FacilityService {
     @Override
     @Transactional
     public Facility createFacility(Integer placeId, FacilityRequest facilityRequest) {
-        Place place = placeRepository.findById(placeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Place not found."));
+        Place place = getPlaceById(placeId);
 
-        if (!isUserOwnerOfPlace(place, facilityRequest.getUserId())) {
-            throw new CustomUserFriendlyException("User is not the owner of the place.");
-        }
+        checkUserOwnership(place, facilityRequest.getUserId());
 
         if (hasExistingFacility(placeId)) {
             throw new CustomUserFriendlyException("A facility already exists for this place. You can only update it.");
@@ -57,7 +54,6 @@ public class FacilityServiceImplementation implements FacilityService {
 
         Facility facility = new Facility();
         BeanUtils.copyProperties(facilityRequest, facility);
-
         facility.setPlace(place);
 
         return facilityRepository.save(facility);
@@ -65,19 +61,13 @@ public class FacilityServiceImplementation implements FacilityService {
 
     @Override
     @Transactional
-    public Facility updateFacility(Integer placeId, Integer regulationId, FacilityRequest facilityRequest) {
-        Place place = placeRepository.findById(placeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Place not found."));
+    public Facility updateFacility(Integer placeId, Integer facilityId, FacilityRequest facilityRequest) {
+        Place place = getPlaceById(placeId);
+        Facility existingFacility = getFacilityById(facilityId);
 
-        if (!isUserOwnerOfPlace(place, facilityRequest.getUserId())) {
-            throw new CustomUserFriendlyException("User is not the owner of the place.");
-        }
-
-        Facility existingFacility = facilityRepository.findById(regulationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Regulation not found."));
+        checkUserOwnership(place, facilityRequest.getUserId());
 
         BeanUtils.copyProperties(facilityRequest, existingFacility);
-
         existingFacility.setPlace(place);
 
         return facilityRepository.save(existingFacility);
@@ -86,12 +76,25 @@ public class FacilityServiceImplementation implements FacilityService {
     @Override
     @Transactional
     public void deleteFacility(Integer placeId, Integer facilityId) {
-        Place place = placeRepository.findById(placeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Place not found."));
-
-        Facility facility = facilityRepository.findById(facilityId)
-                .orElseThrow(() -> new ResourceNotFoundException("Facility not found."));
+        getPlaceById(placeId);
+        Facility facility = getFacilityById(facilityId);
         facilityRepository.delete(facility);
+    }
+
+    private Facility getFacilityById(Integer facilityId) {
+        return facilityRepository.findById(facilityId)
+                .orElseThrow(() -> new ResourceNotFoundException("Facility not found."));
+    }
+
+    private Place getPlaceById(Integer placeId) {
+        return placeRepository.findById(placeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Place not found."));
+    }
+
+    private void checkUserOwnership(Place place, Integer userId) {
+        if (!isUserOwnerOfPlace(place, userId)) {
+            throw new CustomUserFriendlyException("User is not the owner of the place.");
+        }
     }
 
     private boolean isUserOwnerOfPlace(Place place, Integer userId) {
@@ -103,6 +106,5 @@ public class FacilityServiceImplementation implements FacilityService {
     public boolean hasExistingFacility(Integer placeId) {
         return facilityRepository.existsByPlaceId(placeId);
     }
-
 
 }

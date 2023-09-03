@@ -63,10 +63,10 @@ public class User implements UserDetails{
     //@JsonIgnore
     private List<Place> places;
 
-//    @OneToMany(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "reservationId", referencedColumnName = "id")
-//    @JsonIgnore
-//    private List<Reservation> reservations;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "reservation_id", referencedColumnName = "id")
+    @JsonIgnore
+    private List<Reservation> reservations;
 //
 //    @OneToMany(mappedBy = "user")
 //    private List<Review> reviews;

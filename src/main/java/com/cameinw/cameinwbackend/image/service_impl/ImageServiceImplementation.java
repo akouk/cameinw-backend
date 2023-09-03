@@ -47,7 +47,7 @@ public class ImageServiceImplementation implements ImageService {
             byte[] image = ImageHandler.fetchUserImageBytes(user.get());
             return image;
         }
-        throw new ResourceNotFoundException("User not found with ID: " + userId);
+        throw new ResourceNotFoundException("User not found.");
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ImageServiceImplementation implements ImageService {
 
     private void saveSingleImage(Integer placeId, MultipartFile imgFile) {
         Place place = placeRepository.findById(placeId)
-                .orElseThrow(() -> new ResourceNotFoundException("PlaceID " + placeId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
 
         String imgName = imgFile.getOriginalFilename();
 
@@ -86,7 +86,7 @@ public class ImageServiceImplementation implements ImageService {
     @Transactional
     public void uploadUserImage(Integer userId, MultipartFile imgFile) throws IOException {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
         String imgName = imgFile.getOriginalFilename();
 
@@ -101,7 +101,7 @@ public class ImageServiceImplementation implements ImageService {
     @Transactional
     public void updateUserImage(Integer userId, MultipartFile imgFile) throws IOException {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
         // Delete the previous image if it exists
         if (user.getImageName() != null) {
@@ -120,7 +120,7 @@ public class ImageServiceImplementation implements ImageService {
     @Override
     public ResponseEntity<byte[]> getPlacesImage(Integer imageId) throws IOException {
         Image img = imageRepository.findById(imageId)
-                .orElseThrow(() -> new ResourceNotFoundException("Image " + imageId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Image not found"));
 
         try {
             byte[] imgData = ImageHandler.fetchImageBytes(img.getPlace(), img.getImageName());

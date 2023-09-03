@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface PlaceService {
     List<Place> getAllPlaces();
-    Optional<Place> getPlaceById(Integer placeId);
+    Optional<Place> getPlaceByPlaceId(Integer placeId);
     Place createPlace(PlaceRequest placeRequest);
-    Place updatePlace(Integer placeId, Place updatedPlace);
+    Place updatePlace(Integer placeId, PlaceRequest placeRequest);
     void deletePlace(Integer placeId);
     User getOwner(Integer placeId);
 }

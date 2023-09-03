@@ -7,6 +7,7 @@ import com.cameinw.cameinwbackend.place.repository.PlaceRepository;
 import com.cameinw.cameinwbackend.place.request.PlaceRequest;
 import com.cameinw.cameinwbackend.place.service.PlaceService;
 import com.cameinw.cameinwbackend.user.model.User;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,7 @@ public class PlaceController {
     public ResponseEntity<?> getPlaceById (@PathVariable("place_id") Integer placeId) {
 
         try {
-            return new ResponseEntity<>(placeService.getPlaceById(placeId), HttpStatus.OK);
+            return new ResponseEntity<>(placeService.getPlaceByPlaceId(placeId), HttpStatus.OK);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
@@ -41,7 +42,9 @@ public class PlaceController {
     }
 
     @PostMapping() //---- check ok -----
-    public ResponseEntity<String> createPlace(@RequestBody PlaceRequest placeRequest) {
+    public ResponseEntity<String> createPlace(@Valid @RequestBody PlaceRequest placeRequest) {
+
+        // TODO: CHECK HOW TO PRINT WHICH PROPERTY FAILED THE VALIDATION
         try {
             Place createdPlace = placeService.createPlace(placeRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body("Place successfully created."); // STATUS: 201
@@ -49,17 +52,21 @@ public class PlaceController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage()); // STATUS: 400
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage()); //STATUS: 404
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage()); // STATUS: 400
         }
     }
 
     @PutMapping("/{place_id}") //---- check ok -----
     public ResponseEntity<String> updatePlace(@PathVariable("place_id") Integer placeId,
-                                              @RequestBody Place updatedPlace) {
+                                              @RequestBody PlaceRequest placeRequest) {
         try {
-            Place updated = placeService.updatePlace(placeId, updatedPlace);
+            Place updated = placeService.updatePlace(placeId, placeRequest);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Place successfully updated"); // STATUS: 200 OK
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage()); // STATUS: 404 Not Found
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage()); // STATUS: 400
         }
     }
 

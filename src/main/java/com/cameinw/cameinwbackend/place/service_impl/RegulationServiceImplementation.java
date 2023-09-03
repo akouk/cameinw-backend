@@ -41,14 +41,13 @@ public class RegulationServiceImplementation implements RegulationService {
     @Override
     @Transactional
     public Regulation createRegulation(Integer placeId, RegulationRequest regulationRequest) {
+        regulationRequest.validate();
+
         // Check if the user is the owner of the place
-        Place place = placeRepository.findById(placeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Place not found."));
+        Place place = getPlaceById(placeId);
 
         // Verify ownership
-        if (!isUserOwnerOfPlace(place, regulationRequest.getUserId())) {
-            throw new CustomUserFriendlyException("User is not the owner of the place.");
-        }
+        checkUserOwnership(place, regulationRequest.getUserId());
 
         // Check if a regulation already exists for the place
         if (hasExistingRegulation(placeId)) {
@@ -57,7 +56,6 @@ public class RegulationServiceImplementation implements RegulationService {
 
         Regulation regulation = new Regulation();
         BeanUtils.copyProperties(regulationRequest, regulation);
-
         regulation.setPlace(place);
 
         return regulationRepository.save(regulation);
@@ -66,38 +64,41 @@ public class RegulationServiceImplementation implements RegulationService {
     @Override
     @Transactional
     public Regulation updateRegulation(Integer placeId, Integer regulationId, RegulationRequest regulationRequest) {
-        // Check if the user is the owner of the place
-        Place place = placeRepository.findById(placeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Place not found."));
+        regulationRequest.validate();
 
-        // Verify ownership
-        if (!isUserOwnerOfPlace(place, regulationRequest.getUserId())) {
-            throw new CustomUserFriendlyException("User is not the owner of the place.");
-        }
+        Place place = getPlaceById(placeId);
+        Regulation existingRegulation = getRegulationById(regulationId);
 
-        // Retrieve the existing Regulation
-        Regulation existingRegulation = regulationRepository.findById(regulationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Regulation not found."));
+        checkUserOwnership(place, regulationRequest.getUserId());
 
-        // Update the existing Regulation with the new values from RegulationRequest
-        BeanUtils.copyProperties(regulationRequest, existingRegulation);
-
-        // Set the Place for the updated Regulation
+         BeanUtils.copyProperties(regulationRequest, existingRegulation);
         existingRegulation.setPlace(place);
 
-        // Save and return the updated Regulation
         return regulationRepository.save(existingRegulation);
     }
 
     @Override
     @Transactional
     public void deleteRegulation(Integer placeId, Integer regulationId) {
-        Place place = placeRepository.findById(placeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Place not found."));
-
-        Regulation regulation = regulationRepository.findById(regulationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Regulation not found."));
+        getPlaceById(placeId);
+        Regulation regulation = getRegulationById(regulationId);
         regulationRepository.delete(regulation);
+    }
+
+    private Regulation getRegulationById(Integer regulationId) {
+        return regulationRepository.findById(regulationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Regulation not found."));
+    }
+
+    private Place getPlaceById(Integer placeId) {
+        return placeRepository.findById(placeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Place not found."));
+    }
+
+    private void checkUserOwnership(Place place, Integer userId) {
+        if (!isUserOwnerOfPlace(place, userId)) {
+            throw new CustomUserFriendlyException("User is not the owner of the place.");
+        }
     }
 
     private boolean isUserOwnerOfPlace(Place place, Integer userId) {

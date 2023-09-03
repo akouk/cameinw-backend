@@ -1,4 +1,4 @@
-package com.cameinw.cameinwbackend.user.service_impl;
+package com.cameinw.cameinwbackend.user.service_implementation;
 
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.place.repository.PlaceRepository;
@@ -15,12 +15,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserServiceImplementation implements UserService {
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PlaceRepository placeRepository;
 
     @Autowired
-    public UserServiceImplementation(UserRepository userRepository, PlaceRepository placeRepository) {
+    public UserServiceImpl(UserRepository userRepository, PlaceRepository placeRepository) {
         this.userRepository = userRepository;
         this.placeRepository = placeRepository;
     }

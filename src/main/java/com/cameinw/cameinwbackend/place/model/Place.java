@@ -53,10 +53,10 @@ public class Place {
     private String address;
 
     @Column(name = "latitude")
-    private double latitude;
+    private Double latitude;
 
     @Column(name = "longitude")
-    private double longitude;
+    private Double longitude;
 
     @Column(name = "area")
     private Integer area;
@@ -93,4 +93,7 @@ public class Place {
 
     @OneToOne(mappedBy = "place")
     private Regulation regulations;
+
+    @OneToOne(mappedBy = "place")
+    private Regulation facilities;
 }

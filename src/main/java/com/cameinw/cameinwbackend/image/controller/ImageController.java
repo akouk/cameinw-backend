@@ -24,12 +24,12 @@ public class ImageController {
         this.imageService = imageService;
     }
 
-    @GetMapping("/") //CHECK OK
+    @GetMapping() //CHECK OK
     public List<Image> getAllImages() {
         return imageService.getAllImages();
     }
 
-    @GetMapping("/users/{user_id}") //CHECK OK
+    @GetMapping("/users/{user_id}") //-------check ok-----------
     public ResponseEntity<byte[]> getUserImg(@PathVariable("user_id") Integer userId) {
         try {
             byte[] image = imageService.getUserImage(userId);
@@ -43,7 +43,7 @@ public class ImageController {
         }
     }
 
-    @PostMapping("/users/{user_id}") //CHECK OK
+    @PostMapping("/users/{user_id}") //-------check ok-----------
     public ResponseEntity<String> uploadUserImage(
             @PathVariable("user_id") Integer userId,
             @RequestParam("image") MultipartFile imgFile) {
@@ -55,7 +55,7 @@ public class ImageController {
         }
     }
 
-    @PutMapping("/users/{user_id}")
+    @PutMapping("/users/{user_id}") //-------check ok-----------
     public ResponseEntity<String> updateUserImage(
             @PathVariable("user_id") Integer userId,
             @RequestParam("image") MultipartFile imgFile) {

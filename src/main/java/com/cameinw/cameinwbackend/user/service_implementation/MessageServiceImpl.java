@@ -1,4 +1,4 @@
-package com.cameinw.cameinwbackend.user.service_impl;
+package com.cameinw.cameinwbackend.user.service_implementation;
 
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.user.model.Message;
@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
-public class MessageServiceImplementation implements MessageService {
+public class MessageServiceImpl implements MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
 
     @Autowired
-    public MessageServiceImplementation(MessageRepository messageRepository, UserRepository userRepository) {
+    public MessageServiceImpl(MessageRepository messageRepository, UserRepository userRepository) {
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
     }
