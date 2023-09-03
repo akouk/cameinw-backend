@@ -25,18 +25,18 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "imageName")
+    @Column(name = "image_name")
     private String imageName;
 
 
     @ManyToOne
-    @JoinColumn(name = "placeId", nullable = false)
+    @JoinColumn(name = "place_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     private Place place;
 
     @OneToOne
-    @JoinColumn(name = "userId", unique = true)
+    @JoinColumn(name = "user_id", unique = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 }

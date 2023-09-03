@@ -8,6 +8,7 @@ import com.cameinw.cameinwbackend.place.request.PlaceRequest;
 import com.cameinw.cameinwbackend.place.service.PlaceService;
 import com.cameinw.cameinwbackend.user.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,33 +21,35 @@ import java.util.Optional;
 @RequestMapping("/api/places")
 public class PlaceController {
 
-    private final PlaceService placeService;
+    @Autowired
+    private PlaceService placeService;
 
-    private final PlaceRepository placeRepository;
-
-    @GetMapping("/")  //---- check ok -----
+    @GetMapping()  //---- check ok -----
     public List<Place> getAllPlaces() {
         return placeService.getAllPlaces();
     }
 
     @GetMapping("/{place_id}") //---- check ok -----
-    public ResponseEntity<Place> getPlaceById (@PathVariable("place_id") Integer placeId) {
+    public ResponseEntity<?> getPlaceById (@PathVariable("place_id") Integer placeId) {
 
-        Optional<Place> place = placeService.getPlaceById(placeId);
-        return place
-                .map(ResponseEntity::ok) // STATUS: 200 OK
-                .orElseGet(() -> ResponseEntity.notFound().build()); // STATUS: 404 Not Found
+        try {
+            Optional<Place> place = placeService.getPlaceById(placeId);
+            return ResponseEntity.ok(place);
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+
     }
 
-    @PostMapping("/") //---- check ok -----
+    @PostMapping() //---- check ok -----
     public ResponseEntity<String> createPlace(@RequestBody PlaceRequest placeRequest) {
         try {
             Place createdPlace = placeService.createPlace(placeRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body("Place successfully created."); // STATUS: 201
         } catch (CustomUserFriendlyException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is not an owner."); // STATUS: 400
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage()); // STATUS: 400
         } catch (ResourceNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found."); //STATUS: 404
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage()); //STATUS: 404
         }
     }
 
@@ -55,9 +58,9 @@ public class PlaceController {
                                               @RequestBody Place updatedPlace) {
         try {
             Place updated = placeService.updatePlace(placeId, updatedPlace);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Place with id " + placeId + " is updated"); // STATUS: 200 OK
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Place not found."); // STATUS: 404 Not Found
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Place successfully updated"); // STATUS: 200 OK
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage()); // STATUS: 404 Not Found
         }
     }
 
@@ -67,17 +70,17 @@ public class PlaceController {
             placeService.deletePlace(placeId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Place deleted successfully."); // STATUS: 204 No Content
 
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Place not found."); // STATUS: 404 Not Found
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage()); // STATUS: 404 Not Found
         }
     }
 
     @GetMapping("/{place_id}/owner") //---- check ok -----
-    public ResponseEntity<User> getOwner(@PathVariable("place_id") Integer placeId) {
+    public ResponseEntity<?> getOwner(@PathVariable("place_id") Integer placeId) {
         try {
             return ResponseEntity.ok(placeService.getOwner(placeId));
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
 }

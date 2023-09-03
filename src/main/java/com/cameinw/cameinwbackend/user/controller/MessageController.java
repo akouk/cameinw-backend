@@ -51,8 +51,8 @@ public class MessageController {
         try {
             Message newMessage = messageService.createMessage(senderId, receiverId, messageText);
             return ResponseEntity.status(HttpStatus.CREATED).body("Message successfully created."); // STATUS: 201
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
 }

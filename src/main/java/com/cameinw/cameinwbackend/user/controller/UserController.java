@@ -23,7 +23,7 @@ public class UserController {
    // @Autowired
     //private ReviewService reviewService;
 
-    @GetMapping("/") // ---- check ok -----
+    @GetMapping() // ---- check ok -----
     public List<User> getAllUsers() { // ---- check ok -----
         return userService.getAllUsers();
     }
@@ -42,12 +42,12 @@ public class UserController {
         try {
             User updated = userService.updateUser(userId, updatedUser);
             if (updated != null) {
-                return ResponseEntity.ok("User with id " + userId + " is updated"); // STATUS: 200 OK
+                return ResponseEntity.ok("User updated successfully"); // STATUS: 200 OK
             } else {
                 return ResponseEntity.notFound().build(); // STATUS: 404 Not Found
             }
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build(); // STATUS: 404 Not Found
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage()); // STATUS: 404 Not Found
         }
     }
 
@@ -56,8 +56,8 @@ public class UserController {
         try {
             userService.deleteUser(userId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User deleted successfully."); // STATUS: 204 No Content
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found."); // STATUS: 404 Not Found
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage()); // STATUS: 404 Not Found
         }
     }
 
@@ -66,8 +66,8 @@ public class UserController {
         try {
             List<PlaceProjection> places = userService.getPlacesByUserId(userId).orElse(Collections.emptyList());
             return ResponseEntity.ok(places); // STATUS: 200 OK
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found."); // STATUS: 404 Not Found
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage()); // STATUS: 404 Not Found
         }
     }
 

@@ -46,7 +46,7 @@ public class UserServiceImplementation implements UserService {
             existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
             return userRepository.save(existingUser);
         } else {
-            throw new ResourceNotFoundException("User with ID " + userId + " not found.");
+            throw new ResourceNotFoundException("User not found.");
         }
     }
 
@@ -57,7 +57,7 @@ public class UserServiceImplementation implements UserService {
         if (user.isPresent()) {
             userRepository.deleteById(userId);
         } else {
-            throw new ResourceNotFoundException("User with ID " + userId + " not found.");
+            throw new ResourceNotFoundException("User not found.");
         }
     }
 
@@ -67,7 +67,7 @@ public class UserServiceImplementation implements UserService {
         if (user.isPresent()) {
             return placeRepository.findPlacesByUserId(userId);
         } else {
-            throw new ResourceNotFoundException("User with ID " + userId + " not found.");
+            throw new ResourceNotFoundException("User not found.");
         }
     }
 }

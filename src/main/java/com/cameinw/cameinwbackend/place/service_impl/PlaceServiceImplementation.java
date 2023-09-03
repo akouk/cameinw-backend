@@ -3,6 +3,7 @@ package com.cameinw.cameinwbackend.place.service_impl;
 import com.cameinw.cameinwbackend.exception.CustomUserFriendlyException;
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.place.model.Place;
+import com.cameinw.cameinwbackend.place.model.Regulation;
 import com.cameinw.cameinwbackend.place.repository.PlaceRepository;
 import com.cameinw.cameinwbackend.place.request.PlaceRequest;
 import com.cameinw.cameinwbackend.place.service.PlaceService;
@@ -30,7 +31,17 @@ public class PlaceServiceImplementation implements PlaceService {
 
     @Override
     public List<Place> getAllPlaces() {
-        return placeRepository.findAll();
+        try {
+            System.out.println("Attempting to retrieve all places.");
+            List<Place> places = placeRepository.findAll();
+            System.out.println("Retrieved" + places.size() + " places from the database.");
+            return places;
+        } catch (Exception ex) {
+            System.out.println("An error occurred while retrieving all places: " + ex.getMessage());
+            throw ex; // Re-throw the exception to be handled at the controller level.
+        }
+//        return
+//                placeRepository.findAll();
     }
 
     @Override
@@ -56,6 +67,8 @@ public class PlaceServiceImplementation implements PlaceService {
                 .country(placeRequest.getCountry())
                 .city(placeRequest.getCity())
                 .address(placeRequest.getAddress())
+                .longitude(placeRequest.getLongitude())
+                .latitude(placeRequest.getLatitude())
                 .area(placeRequest.getArea())
                 .guests(placeRequest.getGuests())
                 .bedrooms(placeRequest.getBedrooms())
@@ -70,47 +83,38 @@ public class PlaceServiceImplementation implements PlaceService {
     @Override
     @Transactional
     public Place updatePlace(Integer placeId, Place updatedPlace) {
-        Optional<Place> optionalExistingPlace = placeRepository.findById(placeId);
-        if (optionalExistingPlace.isPresent()) {
-            Place existingPlace = optionalExistingPlace.get();
-            existingPlace.setName(updatedPlace.getName());
-            existingPlace.setPropertyType(updatedPlace.getPropertyType());
-            existingPlace.setCountry(updatedPlace.getCountry());
-            existingPlace.setCity(updatedPlace.getCity());
-            existingPlace.setAddress(updatedPlace.getAddress());
-            existingPlace.setCost(updatedPlace.getCost());
-            existingPlace.setDescription(updatedPlace.getDescription());
-            existingPlace.setGuests(updatedPlace.getGuests());
-            existingPlace.setBathrooms(updatedPlace.getBathrooms());
-            existingPlace.setBedrooms(updatedPlace.getBedrooms());
-            existingPlace.setBeds(updatedPlace.getBeds());
-            existingPlace.setMainImage(updatedPlace.getMainImage());
-            existingPlace.setArea(updatedPlace.getArea());
-
-            return placeRepository.save(existingPlace);
-        } else {
-            throw new ResourceNotFoundException("Place with ID " + placeId + " not found.");
-        }
+        return placeRepository.findById(placeId)
+                .map(existingPlace -> {
+                    existingPlace.setName(updatedPlace.getName());
+                    existingPlace.setPropertyType(updatedPlace.getPropertyType());
+                    existingPlace.setCountry(updatedPlace.getCountry());
+                    existingPlace.setCity(updatedPlace.getCity());
+                    existingPlace.setAddress(updatedPlace.getAddress());
+                    existingPlace.setCost(updatedPlace.getCost());
+                    existingPlace.setDescription(updatedPlace.getDescription());
+                    existingPlace.setGuests(updatedPlace.getGuests());
+                    existingPlace.setBathrooms(updatedPlace.getBathrooms());
+                    existingPlace.setBedrooms(updatedPlace.getBedrooms());
+                    existingPlace.setBeds(updatedPlace.getBeds());
+                    existingPlace.setMainImage(updatedPlace.getMainImage());
+                    existingPlace.setArea(updatedPlace.getArea());
+                    return placeRepository.save(existingPlace);
+                })
+                .orElseThrow(() -> new ResourceNotFoundException("Place not found."));
     }
 
     @Override
     @Transactional
     public void deletePlace(Integer placeId) {
-        Optional<Place> place = placeRepository.findById(placeId);
-        if (place.isPresent()) {
-            placeRepository.deleteById(placeId);
-        } else {
-            throw new ResourceNotFoundException("Place with ID " + placeId + " not found.");
-        }
+        Place place = placeRepository.findById(placeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Place not found."));
+        placeRepository.delete(place);
     }
 
     @Override
     public User getOwner(Integer placeId) {
-        Optional<Place> place= placeRepository.findById(placeId);
-        if (place.isPresent()) {
-            return place.get().getUser();
-        } else {
-            throw new ResourceNotFoundException("Place with ID: " + placeId + " does not exist.");
-        }
+        return placeRepository.findById(placeId)
+                .map(place -> place.getUser())
+                .orElseThrow(() -> new ResourceNotFoundException("Place not found."));
     }
 }

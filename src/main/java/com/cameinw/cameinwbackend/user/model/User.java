@@ -28,27 +28,28 @@ import java.util.List;
 public class User implements UserDetails{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(name = "user_id")
     private Integer id;
 
     @Column(name="username", unique=true, nullable=false)
     private String theUserName;
 
-    @Column(name="email")
+    @Column(name="email", unique=true, nullable=false)
     private String email;
 
     @Column(name="password")
     private String password;
 
-    @Column(name="firstName")
+    @Column(name="first_name")
     private String firstName;
 
-    @Column(name="lastName")
+    @Column(name="last_name")
     private String lastName;
 
     @Column(name="phone")
     private String phoneNumber;
 
-    @Column(name="imageName")
+    @Column(name="image_name")
     private String imageName = "userImg.jpg";
 
 
@@ -58,10 +59,10 @@ public class User implements UserDetails{
     private Role role;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "placeId", referencedColumnName = "id")
-    @JsonIgnore
+    @JoinColumn(name = "place_id", referencedColumnName = "id")
+    //@JsonIgnore
     private List<Place> places;
-//
+
 //    @OneToMany(cascade = CascadeType.ALL)
 //    @JoinColumn(name = "reservationId", referencedColumnName = "id")
 //    @JsonIgnore

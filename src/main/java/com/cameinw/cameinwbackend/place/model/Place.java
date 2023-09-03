@@ -1,5 +1,6 @@
 package com.cameinw.cameinwbackend.place.model;
 
+import com.cameinw.cameinwbackend.image.model.Image;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.cameinw.cameinwbackend.user.model.User;
@@ -23,6 +24,7 @@ import java.util.List;
 public class Place {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(name = "place_id")
     private Integer id;
 
     @Column(name = "name")
@@ -35,7 +37,7 @@ public class Place {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "mainImage")
+    @Column(name = "main_image")
     private String mainImage;
 
     @Column(name = "cost")
@@ -76,9 +78,9 @@ public class Place {
     @JsonIgnore
     private User user;
 
-//    @OneToMany(mappedBy = "place")
-//    private List<Image> images;
-//
+    @OneToMany(mappedBy = "place")
+    private List<Image> images;
+
 //    @OneToMany(mappedBy = "place")
 //    private List<Review> reviews;
 //
@@ -89,4 +91,6 @@ public class Place {
 //    @JsonIgnore
 //    private List<Reservation> reservations;
 
+    @OneToOne(mappedBy = "place")
+    private Regulation regulations;
 }

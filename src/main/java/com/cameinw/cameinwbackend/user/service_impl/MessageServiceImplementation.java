@@ -41,10 +41,10 @@ public class MessageServiceImplementation implements MessageService {
     @Transactional
     public Message createMessage(Integer senderId, Integer receiverId, String message) {
         User sender = userRepository.findById(senderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Sender with id " + senderId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Sender not found."));
 
         User receiver = userRepository.findById(receiverId)
-                .orElseThrow(() -> new ResourceNotFoundException("Receiver with id " + receiverId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Receiver not found."));
 
         Message newMessage = new Message();
         newMessage.setSender(sender);
