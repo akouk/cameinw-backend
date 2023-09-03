@@ -45,6 +45,8 @@ public class RegulationController {
         try {
             Regulation createdRegulation = regulationService.createRegulation(placeId, regulationRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body("Regulation successfully created.");
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }

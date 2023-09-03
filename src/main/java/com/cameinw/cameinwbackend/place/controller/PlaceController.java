@@ -33,8 +33,7 @@ public class PlaceController {
     public ResponseEntity<?> getPlaceById (@PathVariable("place_id") Integer placeId) {
 
         try {
-            Optional<Place> place = placeService.getPlaceById(placeId);
-            return ResponseEntity.ok(place);
+            return new ResponseEntity<>(placeService.getPlaceById(placeId), HttpStatus.OK);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
@@ -69,7 +68,6 @@ public class PlaceController {
         try {
             placeService.deletePlace(placeId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Place deleted successfully."); // STATUS: 204 No Content
-
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage()); // STATUS: 404 Not Found
         }
@@ -78,7 +76,7 @@ public class PlaceController {
     @GetMapping("/{place_id}/owner") //---- check ok -----
     public ResponseEntity<?> getOwner(@PathVariable("place_id") Integer placeId) {
         try {
-            return ResponseEntity.ok(placeService.getOwner(placeId));
+            return new ResponseEntity<>(placeService.getOwner(placeId), HttpStatus.OK);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
