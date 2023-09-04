@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface RegulationRepository extends JpaRepository<Regulation, Integer> {
-    Optional<Regulation> findById(Integer id);
+    Optional<Regulation> findById(Integer regulationId);
     boolean existsByPlaceId(Integer placeId);
 }

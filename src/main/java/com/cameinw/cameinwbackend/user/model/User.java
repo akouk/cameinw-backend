@@ -1,6 +1,7 @@
 package com.cameinw.cameinwbackend.user.model;
 
 import com.cameinw.cameinwbackend.image.model.Image;
+import com.cameinw.cameinwbackend.place.model.Regulation;
 import com.cameinw.cameinwbackend.user.enums.Role;
 import com.cameinw.cameinwbackend.place.model.Place;
 
@@ -63,14 +64,14 @@ public class User implements UserDetails{
     //@JsonIgnore
     private List<Place> places;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "reservation_id", referencedColumnName = "id")
-    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    //@JsonIgnore
     private List<Reservation> reservations;
-//
-//    @OneToMany(mappedBy = "user")
-//    private List<Review> reviews;
-//
+
+
+    @OneToMany(mappedBy = "user")
+    private List<Review> reviews;
+
 //    @OneToMany(mappedBy = "user")
 //    @JsonIgnore
 //    private List<Search> searches;

@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 public interface PlaceRepository extends JpaRepository<Place, Integer>{
-    Optional<Place> findById(Integer id);
+    Optional<Place> findById(Integer placeId);
 
     @Query(value ="SELECT a.id, a.theUserName, a.address, a.name, a.cost, a.guests " +
             "FROM places a " +

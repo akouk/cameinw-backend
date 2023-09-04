@@ -22,13 +22,4 @@ public class RegisterRequest {
     private String email;
     private Role role;
     private String phoneNumber;
-
-    // Stin eggrafi de xreiazomaste ta places. As ta prosthetei meta.
-    private List<Place> places;
-    public List<Place> getPlaces() {
-        if (getRole().equals(Role.OWNER))
-            return places;
-        else
-            return null;
-    }
 }

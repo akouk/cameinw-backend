@@ -3,19 +3,16 @@ package com.cameinw.cameinwbackend.user.service_implementation;
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.place.model.Place;
 import com.cameinw.cameinwbackend.place.repository.PlaceRepository;
-import com.cameinw.cameinwbackend.place.request.RegulationRequest;
 import com.cameinw.cameinwbackend.user.model.Reservation;
 import com.cameinw.cameinwbackend.user.model.User;
 import com.cameinw.cameinwbackend.user.repository.ReservationRepository;
 import com.cameinw.cameinwbackend.user.repository.UserRepository;
 import com.cameinw.cameinwbackend.user.request.ReservationRequest;
 import com.cameinw.cameinwbackend.user.service.ReservationService;
-import com.cameinw.cameinwbackend.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {

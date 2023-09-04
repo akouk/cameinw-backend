@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface UserService {
     List<User> getAllUsers();
-    Optional<User> getUserById(Integer userId);
+    Optional<User> getUserByUserId(Integer userId);
     User updateUser(Integer userId, User updatedUser);
     void deleteUser(Integer userId);
     Optional<List<PlaceProjection>> getPlacesByUserId(Integer userId);

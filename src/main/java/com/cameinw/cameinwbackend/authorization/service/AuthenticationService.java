@@ -29,7 +29,6 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .phoneNumber(request.getPhoneNumber())
                 .role(request.getRole())
-                .places(request.getPlaces())
                 .build();
 
         userRepository.save(user);

@@ -30,16 +30,14 @@ public class ImageController {
     }
 
     @GetMapping("/users/{user_id}") //-------check ok-----------
-    public ResponseEntity<byte[]> getUserImg(@PathVariable("user_id") Integer userId) {
+    public ResponseEntity<?> getUserImg(@PathVariable("user_id") Integer userId) {
         try {
             byte[] image = imageService.getUserImage(userId);
-            return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_JPEG)
-                    .body(image);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.IMAGE_JPEG).body(image);
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (IOException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
     }
 
@@ -49,9 +47,11 @@ public class ImageController {
             @RequestParam("image") MultipartFile imgFile) {
         try {
             imageService.uploadUserImage(userId, imgFile);
-            return ResponseEntity.ok("Image uploaded successfully.");
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed.");
+            return ResponseEntity.status(HttpStatus.CREATED).body("Image uploaded successfully.");
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (IOException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
     }
 
@@ -61,9 +61,11 @@ public class ImageController {
             @RequestParam("image") MultipartFile imgFile) {
         try {
             imageService.updateUserImage(userId, imgFile);
-            return ResponseEntity.ok("Image updated successfully.");
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image update failed.");
+            return ResponseEntity.status(HttpStatus.OK).body("Image updated successfully.");
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (IOException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
     }
 
@@ -80,32 +82,36 @@ public class ImageController {
     ) {
         try {
             imageService.uploadImagesForPlace(placeId, imgFiles);
-            return ResponseEntity.ok("Images uploaded successfully.");
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while processing images.");
+            return ResponseEntity.status(HttpStatus.OK).body("Images uploaded successfully.");
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (IOException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
     }
 
     @GetMapping("/places/{place_id}/{image_id}") //CHECK OK
-    public ResponseEntity<byte[]> getPlaceImageById(@PathVariable("image_id") Integer imageId) {
+    public ResponseEntity<?> getPlaceImageById(
+            @PathVariable("place_id") Integer placeId,
+            @PathVariable("image_id") Integer imageId
+    ) {
         try {
-            return imageService.getPlacesImage(imageId);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            byte[] image = imageService.getPlacesImage(placeId, imageId);
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.IMAGE_JPEG).body(image);
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (IOException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
     }
 
     @DeleteMapping("/places/{place_id}/{image_id}") //CHECK OK
-    public ResponseEntity<?> deletePlaceImageById(@PathVariable("image_id") Integer imageId) {
+    public ResponseEntity<?> deletePlaceImageById(@PathVariable("place_id") Integer placeId, @PathVariable("image_id") Integer imageId) {
         try {
-            imageService.removePlacesImage(imageId);
-            return ResponseEntity.noContent().build(); // STATUS: 204 No Content
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build(); // STATUS: 404 Not Found
+            imageService.deletePlacesImage(placeId, imageId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Place's image deleted successfully.");
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
 }

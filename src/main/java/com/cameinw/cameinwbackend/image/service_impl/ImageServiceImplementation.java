@@ -35,19 +35,23 @@ public class ImageServiceImplementation implements ImageService {
         this.placeRepository = placeRepository;
     }
 
+    private static final String IMAGES_PATH = "images/";
+    private static final String USER_IMAGE_PATH = "users/";
+    private static final String PLACES_IMAGE_PATH = "places/";
+
     @Override
     public List<Image> getAllImages() {
         return imageRepository.findAll();
     }
 
     @Override
-    public byte[] getUserImage(Integer userId) throws IOException {
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isPresent()) {
-            byte[] image = ImageHandler.fetchUserImageBytes(user.get());
-            return image;
+    public byte[] getUserImage(Integer userId) {
+        User user = getUserById(userId);
+        try {
+            return  ImageHandler.fetchUserImageBytes(user);
+        } catch (IOException e) {
+        throw new CustomUserFriendlyException("Error while fetching the image.");
         }
-        throw new ResourceNotFoundException("User not found.");
     }
 
     @Override
@@ -64,8 +68,7 @@ public class ImageServiceImplementation implements ImageService {
     }
 
     private void saveSingleImage(Integer placeId, MultipartFile imgFile) {
-        Place place = placeRepository.findById(placeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
+        Place place = getPlaceById(placeId);
 
         String imgName = imgFile.getOriginalFilename();
 
@@ -76,7 +79,7 @@ public class ImageServiceImplementation implements ImageService {
 
         try {
             ImageHandler.createPlacesImageDirectory(placeId);
-            ImageHandler.saveImage("places/" + placeId + "/" + imgName, imgFile.getBytes());
+            ImageHandler.saveImage(PLACES_IMAGE_PATH + placeId + "/" + imgName, imgFile.getBytes());
         } catch (IOException e) {
             throw new CustomUserFriendlyException("Error while saving the image.");
         }
@@ -84,14 +87,17 @@ public class ImageServiceImplementation implements ImageService {
 
     @Override
     @Transactional
-    public void uploadUserImage(Integer userId, MultipartFile imgFile) throws IOException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+    public void uploadUserImage(Integer userId, MultipartFile imgFile) {
+        User user = getUserById(userId);
 
         String imgName = imgFile.getOriginalFilename();
 
-        ImageHandler.createUsersImageDirectory(userId);
-        ImageHandler.saveImage("users/" + userId + "/" + imgName, imgFile.getBytes());
+        try {
+            ImageHandler.createUsersImageDirectory(userId);
+            ImageHandler.saveImage(USER_IMAGE_PATH + userId + "/" + imgName, imgFile.getBytes());
+        } catch (IOException ex) {
+            throw new CustomUserFriendlyException("Error while saving the image.");
+        }
 
         user.setImageName(imgName);
         userRepository.save(user);
@@ -99,9 +105,8 @@ public class ImageServiceImplementation implements ImageService {
 
     @Override
     @Transactional
-    public void updateUserImage(Integer userId, MultipartFile imgFile) throws IOException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+    public void updateUserImage(Integer userId, MultipartFile imgFile) {
+        User user = getUserById(userId);
 
         // Delete the previous image if it exists
         if (user.getImageName() != null) {
@@ -110,37 +115,61 @@ public class ImageServiceImplementation implements ImageService {
 
         String imgName = imgFile.getOriginalFilename();
 
-        ImageHandler.createUsersImageDirectory(userId);
-        ImageHandler.saveImage("users/" + userId + "/" + imgName, imgFile.getBytes());
+        try {
+            ImageHandler.createUsersImageDirectory(userId);
+            ImageHandler.saveImage(USER_IMAGE_PATH + userId + "/" + imgName, imgFile.getBytes());
+        } catch (IOException ex) {
+            throw new CustomUserFriendlyException("Error while saving the image.");
+        }
 
         user.setImageName(imgName);
         userRepository.save(user);
     }
 
     @Override
-    public ResponseEntity<byte[]> getPlacesImage(Integer imageId) throws IOException {
-        Image img = imageRepository.findById(imageId)
-                .orElseThrow(() -> new ResourceNotFoundException("Image not found"));
+    public byte[] getPlacesImage(Integer placeId, Integer imageId) {
+        Place place = getPlaceById(placeId);
+        Image img = getImageById(imageId);
+
+        if (!img.getPlace().equals(place)) {
+            throw new ResourceNotFoundException("Image is not associated with the Place.");
+        }
 
         try {
-            byte[] imgData = ImageHandler.fetchImageBytes(img.getPlace(), img.getImageName());
-            return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_JPEG)
-                    .body(imgData);
-
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ImageHandler.fetchImageBytes(img.getPlace(), img.getImageName());
+        } catch (IOException e) {
+            throw new CustomUserFriendlyException("Error while fetching the image.");
         }
+
     }
 
     @Override
-    public ResponseEntity<?> removePlacesImage(Integer imageId) {
-        imageRepository.findById(imageId).ifPresent(image -> {
-            String imgPath = "images/" + image.getPlace().getId() + "/" + image.getImageName();
-            ImageHandler.deleteImage(imgPath);
-            imageRepository.delete(image);
-        });
+    @Transactional
+    public void deletePlacesImage(Integer placeId, Integer imageId) {
+        Place place = getPlaceById(placeId);
+        Image img = getImageById(imageId);
 
-        return ResponseEntity.ok().build();
+        if (!img.getPlace().equals(place)) {
+            throw new ResourceNotFoundException("Image is not associated with the Place.");
+        }
+
+        String imgPath = IMAGES_PATH + img.getPlace().getId() + "/" + img.getImageName();
+        ImageHandler.deleteImage(imgPath);
+        imageRepository.delete(img);
+    }
+
+    private Image getImageById(Integer imageId) {
+        return imageRepository.findById(imageId)
+                .orElseThrow(() -> new ResourceNotFoundException("Image not found"));
+    }
+
+    private User getUserById(Integer userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+    }
+
+    private Place getPlaceById(Integer placeId) {
+        return placeRepository.findById(placeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Place not found."));
     }
 }

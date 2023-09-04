@@ -14,7 +14,7 @@ public interface ImageService {
     void uploadUserImage(Integer userId, MultipartFile imgFile) throws IOException;
     void updateUserImage(Integer userId, MultipartFile imgFile) throws IOException;
     Optional<List<Image>> getImagesByPlaceId(Integer placeId);
-    void uploadImagesForPlace(Integer placeId, MultipartFile[] imageFiles);
-    ResponseEntity<byte[]> getPlacesImage(Integer imageId) throws IOException;
-    ResponseEntity<?> removePlacesImage(Integer imageId);
+    void uploadImagesForPlace(Integer placeId, MultipartFile[] imageFiles) throws IOException;
+    byte[] getPlacesImage(Integer placeId, Integer imageId) throws IOException;
+    void deletePlacesImage(Integer placeId, Integer imageId);
 }

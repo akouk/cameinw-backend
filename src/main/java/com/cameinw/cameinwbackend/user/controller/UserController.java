@@ -30,7 +30,7 @@ public class UserController {
 
     @GetMapping("/{user_id}") // ---- check ok -----
     public ResponseEntity<User> getUserById(@PathVariable("user_id") Integer userId) {
-        Optional<User> user = userService.getUserById(userId);
+        Optional<User> user = userService.getUserByUserId(userId);
         return user
                 .map(ResponseEntity::ok) // STATUS: 200 OK
                 .orElseGet(() -> ResponseEntity.notFound().build()); // STATUS: 404 Not Found

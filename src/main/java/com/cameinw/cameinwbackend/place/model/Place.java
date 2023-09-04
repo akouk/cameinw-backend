@@ -1,6 +1,8 @@
 package com.cameinw.cameinwbackend.place.model;
 
 import com.cameinw.cameinwbackend.image.model.Image;
+import com.cameinw.cameinwbackend.user.model.Reservation;
+import com.cameinw.cameinwbackend.user.model.Review;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.cameinw.cameinwbackend.user.model.User;
@@ -81,15 +83,15 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<Image> images;
 
-//    @OneToMany(mappedBy = "place")
-//    private List<Review> reviews;
+    @OneToMany(mappedBy = "place")
+    private List<Review> reviews;
 //
 //    @OneToMany(mappedBy = "place")
 //    private List<Availability> availabilities;
 //
-//    @OneToMany(mappedBy = "place")
-//    @JsonIgnore
-//    private List<Reservation> reservations;
+    @OneToMany(mappedBy = "place")
+    //@JsonIgnore
+    private List<Reservation> reservations;
 
     @OneToOne(mappedBy = "place")
     private Regulation regulations;

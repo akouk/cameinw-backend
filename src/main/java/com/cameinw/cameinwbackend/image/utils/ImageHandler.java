@@ -10,18 +10,20 @@ import java.io.IOException;
 public class ImageHandler {
     @Getter
     private static String mainPath;
+    private static final String USER_IMAGE_PATH = "users/";
+    private static final String PLACES_IMAGE_PATH = "places/";
 
     public static void setMainPath(String mainPath) {
         ImageHandler.mainPath = mainPath;
     }
 
     public static boolean createPlacesImageDirectory(Integer placeId) {
-        String directoryPath = mainPath + "places/" + placeId;
+        String directoryPath = mainPath + PLACES_IMAGE_PATH + placeId;
         return FileUtils.makeDirectory(directoryPath);
     }
 
     public static boolean createUsersImageDirectory(Integer userId) {
-        String directoryPath = mainPath + "users/" + userId;
+        String directoryPath = mainPath + USER_IMAGE_PATH + userId;
         return FileUtils.makeDirectory(directoryPath);
     }
 
@@ -31,7 +33,7 @@ public class ImageHandler {
     }
 
     public static byte[] fetchImageBytes(Place place, String imgName) throws IOException {
-        String imgPath = ImageHandler.getMainPath() + "places/" + place.getId() + "/" + imgName;
+        String imgPath = ImageHandler.getMainPath() + PLACES_IMAGE_PATH + place.getId() + "/" + imgName;
         return FileUtils.readBytesFromFile(imgPath);
     }
 
@@ -41,13 +43,13 @@ public class ImageHandler {
 
     public static byte[] fetchUserImageBytes(User user) throws IOException {
         String imgName = user.getImageName();
-        String imgPath = ImageHandler.getMainPath() + "users/" + user.getId() + "/" + imgName;
+        String imgPath = ImageHandler.getMainPath() + USER_IMAGE_PATH + user.getId() + "/" + imgName;
 
         return FileUtils.readBytesFromFile(imgPath);
     }
 
     public static boolean deleteUserImage(Integer userId, String imageName) {
-        String imgPath = mainPath + "users/" + userId + "/" + imageName;
+        String imgPath = mainPath + USER_IMAGE_PATH + userId + "/" + imageName;
         return FileUtils.deleteFile(imgPath);
     }
 }

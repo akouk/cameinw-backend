@@ -31,43 +31,38 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getUserById(Integer userId) {
+    public Optional<User> getUserByUserId(Integer userId) {
         return userRepository.findById(userId);
     }
 
     @Override
     @Transactional
     public User updateUser(Integer userId, User updatedUser) {
-        Optional<User> optionalExistingUser = userRepository.findById(userId);
-        if (optionalExistingUser.isPresent()) {
-            User existingUser = optionalExistingUser.get();
-            existingUser.setFirstName(updatedUser.getFirstName());
-            existingUser.setLastName(updatedUser.getLastName());
-            existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
-            return userRepository.save(existingUser);
-        } else {
-            throw new ResourceNotFoundException("User not found.");
-        }
+        User existingUser = getUserById(userId);
+
+        existingUser.setFirstName(updatedUser.getFirstName());
+        existingUser.setLastName(updatedUser.getLastName());
+        existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+
+        return userRepository.save(existingUser);
     }
 
     @Override
     @Transactional
     public void deleteUser(Integer userId) {
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isPresent()) {
-            userRepository.deleteById(userId);
-        } else {
-            throw new ResourceNotFoundException("User not found.");
-        }
+        User user = getUserById(userId);
+        userRepository.delete(user);
     }
 
     @Override
     public Optional<List<PlaceProjection>> getPlacesByUserId(Integer userId) {
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isPresent()) {
-            return placeRepository.findPlacesByUserId(userId);
-        } else {
-            throw new ResourceNotFoundException("User not found.");
-        }
+        User user = getUserById(userId);
+        return placeRepository.findPlacesByUserId(userId);
     }
+
+    private User getUserById(Integer userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+    }
+
 }
