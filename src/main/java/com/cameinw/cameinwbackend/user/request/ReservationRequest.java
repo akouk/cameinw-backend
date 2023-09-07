@@ -1,5 +1,7 @@
 package com.cameinw.cameinwbackend.user.request;
 
+import com.cameinw.cameinwbackend.place.model.Place;
+import com.cameinw.cameinwbackend.user.model.User;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +19,8 @@ public class ReservationRequest {
     private Date checkIn;
     @NotNull(message = "Check out cannot be null.")
     private Date checkOut;
+    @NotNull(message = "Place ID cannot be null.")
+    Place place;
     @NotNull(message = "User ID cannot be null.")
-    Integer userId;
+    User user;
 }

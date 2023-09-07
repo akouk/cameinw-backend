@@ -11,7 +11,6 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -30,13 +29,13 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "sender_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    //@JsonIgnore
+    @JsonIgnore
     private User sender;
 
     @ManyToOne
     @JoinColumn(name = "receiver_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    //@JsonIgnore
+    @JsonIgnore
     private User receiver;
 
     private LocalDateTime timestamp;

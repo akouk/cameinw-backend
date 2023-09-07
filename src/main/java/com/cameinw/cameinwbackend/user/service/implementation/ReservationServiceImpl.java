@@ -1,5 +1,6 @@
-package com.cameinw.cameinwbackend.user.service_implementation;
+package com.cameinw.cameinwbackend.user.service.implementation;
 
+import com.cameinw.cameinwbackend.exception.CustomUserFriendlyException;
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.place.model.Place;
 import com.cameinw.cameinwbackend.place.repository.PlaceRepository;
@@ -34,12 +35,6 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<Reservation> getReservationsByUserId (Integer userId){
-        User user = getUserById(userId);
-        return reservationRepository.findByUser(user);
-    }
-
-    @Override
     public Reservation getReservationById(Integer reservationId) {
         return reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Reservation not found."));
@@ -57,54 +52,23 @@ public class ReservationServiceImpl implements ReservationService {
         return reservation.getPlace();
     }
 
-//    public Reservation makeReservation(Integer placeId, ReservationRequest reservationRequest) {
-//
-//        Place place = placeRepository.findById(placeId)
-//                .orElseThrow(() -> new ResourceNotFoundException("Place not found."));
-//
-//        User user = userRepository.findById(reservationRequest.getUserId())
-//                .orElseThrow(() -> new ResourceNotFoundException("Place not found."));
-//
-//
-//
-//        List<Reservation> reservationExist = reservationRepository
-//                .findBetweenDates(reservationRequest.getCheckIn(),
-//                        reservationRequest.getCheckOut(),
-//                        place);
-//
-//
-//        /* Checks if the user and the place exist, then if
-//         * the check in date is smaller than the check out date
-//         * and finally if the dates are available
-//         * IF SO, A RESERVATION IS MADE*/
-//
-//        if (user != null
-//                && place != null
-//                && reservationExist.size() == 0
-//                && reservationRequest.getCheckIn().compareTo(reservationRequest.getCheckOut()) < 0) {
-//            var newReservation = Reservation.builder()
-//                    .checkIn(reservationRequest.getCheckIn())
-//                    .checkOut(reservationRequest.getCheckOut())
-//                    .user(user)
-//                    .place(place)
-//                    .build();
-//
-//            reservationRepository.save(newReservation);
-//            return newReservation;
-//        }
-//        return null;
-//    }
+    public Reservation makeReservation(ReservationRequest reservationRequest) {
+        Place place = reservationRequest.getPlace();
+        getPlaceById(place.getId());
+        User user = reservationRequest.getUser();
+        getUserById(user.getId());
 
-    public Reservation makeReservation(Integer placeId, ReservationRequest reservationRequest) {
-        Place place = getPlaceById(placeId);
-        User user = getUserById(reservationRequest.getUserId());
-
-        if (place != null && user != null && isValidReservation(reservationRequest, place)) {
-            Reservation newReservation = createReservation(reservationRequest, place, user);
-            return saveReservation(newReservation);
+        // Check if the user owns the place
+        if (isUserOwnerOfPlace(place, user.getId())) {
+            throw new CustomUserFriendlyException("You cannot make a reservation for your own place.");
         }
 
-        return null;
+        if (isValidReservation(reservationRequest, place)) {
+            Reservation newReservation = createReservation(reservationRequest, place, user);
+            return saveReservation(newReservation);
+        } else {
+            throw new CustomUserFriendlyException("Failed to create reservation.");
+        }
     }
 
     private Place getPlaceById(Integer placeId) {
@@ -125,6 +89,11 @@ public class ReservationServiceImpl implements ReservationService {
 
         return existingReservations.isEmpty()
                 && reservationRequest.getCheckIn().compareTo(reservationRequest.getCheckOut()) < 0;
+    }
+
+    private boolean isUserOwnerOfPlace(Place place, Integer userId) {
+        User placeOwner = place.getUser();
+        return placeOwner != null && placeOwner.getId().equals(userId);
     }
 
     private Reservation createReservation(ReservationRequest reservationRequest, Place place, User user) {

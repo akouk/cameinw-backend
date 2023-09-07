@@ -5,10 +5,14 @@ import com.cameinw.cameinwbackend.user.model.Reservation;
 import com.cameinw.cameinwbackend.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
     List<Reservation> findByUser(User user);
 
@@ -27,4 +31,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
             "OR (a.checkIn > ?1 " +
             "AND a.checkOut < ?2)) ")
     List<Reservation> findBetweenDates(Date checkIn, Date checkOut, Place place);
+
+    @Query("SELECT r FROM Reservation r WHERE r.user = :user AND r.place = :place")
+    List<Reservation> findByUserAndPlace(@Param("user") User user, @Param("place") Place place);
 }

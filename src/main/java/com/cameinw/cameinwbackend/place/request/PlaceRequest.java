@@ -1,6 +1,7 @@
 package com.cameinw.cameinwbackend.place.request;
 
 import com.cameinw.cameinwbackend.place.enums.PropertyType;
+import com.cameinw.cameinwbackend.user.model.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -50,8 +51,8 @@ public class PlaceRequest {
     @NotNull(message = "Bedrooms cannot be null.")
     @PositiveOrZero(message = "Bedrooms number cannot be negative.")
     private Integer bathrooms;
-    @NotNull(message = "User ID cannot be null.")
-    private Integer userId;
+    @NotNull(message = "User cannot be null.")
+    private User user;
 
     public void validate() {
         if (!isValidPropertyType(propertyType)) {
@@ -68,3 +69,39 @@ public class PlaceRequest {
                 .collect(Collectors.joining(", "));
     }
 }
+
+
+// ------------------------ EXAMPLES -----------------------
+
+//           --Create Place--
+//
+//{
+//        "name": "Example Place",
+//        "propertyType": "APARTMENT",
+//        "description": "A cozy apartment in the city center.",
+//        "cost": 100,
+//        "country": "Greece",
+//        "city": "Athens",
+//        "address": "123 Main Street",
+//        "latitude": 40.7128,
+//        "longitude": -74.0060,
+//        "area": 80,
+//        "guests": 2,
+//        "bedrooms": 1,
+//        "beds": 1,
+//        "bathrooms": 1,
+//        "user": {
+//            "id": 2
+//        }
+//}
+
+//           --Update Place--
+//
+//{
+//        "cost": 200,
+//        "user": {
+//            "id": 2
+//        }
+//}
+
+

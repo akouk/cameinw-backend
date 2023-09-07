@@ -1,4 +1,4 @@
-package com.cameinw.cameinwbackend.image.service_impl;
+package com.cameinw.cameinwbackend.image.service.implementation;
 
 import com.cameinw.cameinwbackend.exception.CustomUserFriendlyException;
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
@@ -6,14 +6,13 @@ import com.cameinw.cameinwbackend.image.model.Image;
 import com.cameinw.cameinwbackend.image.repository.ImageRepository;
 import com.cameinw.cameinwbackend.image.service.ImageService;
 import com.cameinw.cameinwbackend.place.model.Place;
+import com.cameinw.cameinwbackend.place.model.Regulation;
 import com.cameinw.cameinwbackend.place.repository.PlaceRepository;
 import com.cameinw.cameinwbackend.user.model.User;
 import com.cameinw.cameinwbackend.user.repository.UserRepository;
 import com.cameinw.cameinwbackend.image.utils.ImageHandler;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,13 +22,13 @@ import java.util.Optional;
 
 @Service
 
-public class ImageServiceImplementation implements ImageService {
+public class ImageServiceImpl implements ImageService {
     private final ImageRepository imageRepository;
     private final UserRepository userRepository;
     private final PlaceRepository placeRepository;
 
     @Autowired
-    public ImageServiceImplementation(ImageRepository imageRepository, UserRepository userRepository, PlaceRepository placeRepository) {
+    public ImageServiceImpl(ImageRepository imageRepository, UserRepository userRepository, PlaceRepository placeRepository) {
         this.imageRepository = imageRepository;
         this.userRepository = userRepository;
         this.placeRepository = placeRepository;
@@ -41,7 +40,13 @@ public class ImageServiceImplementation implements ImageService {
 
     @Override
     public List<Image> getAllImages() {
-        return imageRepository.findAll();
+
+        List<Image> images = imageRepository.findAll();
+
+        if (images.isEmpty()) {
+            throw new ResourceNotFoundException("No images were found.");
+        }
+        return images;
     }
 
     @Override

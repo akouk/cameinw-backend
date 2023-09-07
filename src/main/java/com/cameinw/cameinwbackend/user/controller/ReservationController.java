@@ -1,4 +1,5 @@
 package com.cameinw.cameinwbackend.user.controller;
+import com.cameinw.cameinwbackend.exception.CustomUserFriendlyException;
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.place.model.Facility;
 import com.cameinw.cameinwbackend.place.model.Place;
@@ -25,15 +26,16 @@ public class ReservationController {
     private final ReservationService reservationService;
 
 
-    @PostMapping("/{place_id}")
+    @PostMapping()
     public ResponseEntity<String> makeReservation(
-            @PathVariable("place_id") Integer placeId,
             @Valid @RequestBody ReservationRequest reservationRequest) {
-        Reservation createdReservation = reservationService.makeReservation(placeId, reservationRequest);
-        if (createdReservation != null) {
+        try {
+            Reservation createReservation = reservationService.makeReservation(reservationRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body("Reservation successfully created.");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to create reservation.");
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (CustomUserFriendlyException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
     }
 
@@ -65,12 +67,6 @@ public class ReservationController {
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
-    }
-
-    @GetMapping("/user/{user_id}")
-    public ResponseEntity<List<Reservation>> getReservationsByUserId(@PathVariable("user_id") Integer userId) {
-        List<Reservation> reservations = reservationService.getReservationsByUserId(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(reservations);
     }
 
 }

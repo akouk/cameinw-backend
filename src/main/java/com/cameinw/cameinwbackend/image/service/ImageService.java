@@ -1,7 +1,6 @@
 package com.cameinw.cameinwbackend.image.service;
 
 import com.cameinw.cameinwbackend.image.model.Image;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

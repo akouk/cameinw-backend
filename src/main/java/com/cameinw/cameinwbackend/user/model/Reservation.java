@@ -1,6 +1,7 @@
 package com.cameinw.cameinwbackend.user.model;
 
 import com.cameinw.cameinwbackend.place.model.Place;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,10 +34,12 @@ public class Reservation {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "place_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
     private Place place;
 }

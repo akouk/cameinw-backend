@@ -1,4 +1,4 @@
-package com.cameinw.cameinwbackend.user.service_implementation;
+package com.cameinw.cameinwbackend.user.service.implementation;
 
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.user.model.Message;
@@ -41,10 +41,10 @@ public class MessageServiceImpl implements MessageService {
     @Transactional
     public Message createMessage(Integer senderId, Integer receiverId, String message) {
         User sender = userRepository.findById(senderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Sender not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Sender with id " + senderId + " not found"));
 
         User receiver = userRepository.findById(receiverId)
-                .orElseThrow(() -> new ResourceNotFoundException("Receiver not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Receiver with id " + receiverId + " not found"));
 
         Message newMessage = new Message();
         newMessage.setSender(sender);
@@ -56,4 +56,5 @@ public class MessageServiceImpl implements MessageService {
 
         return messageRepository.save(newMessage);
     }
+
 }

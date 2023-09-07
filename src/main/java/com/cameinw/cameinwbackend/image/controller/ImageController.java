@@ -3,6 +3,7 @@ package com.cameinw.cameinwbackend.image.controller;
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.image.model.Image;
 import com.cameinw.cameinwbackend.image.service.ImageService;
+import com.cameinw.cameinwbackend.place.model.Regulation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,12 +26,18 @@ public class ImageController {
     }
 
     @GetMapping() //CHECK OK
-    public List<Image> getAllImages() {
-        return imageService.getAllImages();
+    public ResponseEntity<?> getAllImages() {
+
+        try {
+            List<Image> images = imageService.getAllImages();
+            return new ResponseEntity<>(images, HttpStatus.OK);
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
     }
 
-    @GetMapping("/users/{user_id}") //-------check ok-----------
-    public ResponseEntity<?> getUserImg(@PathVariable("user_id") Integer userId) {
+    @GetMapping("/users/{user_id}/image") //-------check ok-----------
+    public ResponseEntity<?> getImageByUserId(@PathVariable("user_id") Integer userId) {
         try {
             byte[] image = imageService.getUserImage(userId);
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.IMAGE_JPEG).body(image);
@@ -41,7 +48,7 @@ public class ImageController {
         }
     }
 
-    @PostMapping("/users/{user_id}") //-------check ok-----------
+    @PostMapping("/users/{user_id}/image") //-------check ok-----------
     public ResponseEntity<String> uploadUserImage(
             @PathVariable("user_id") Integer userId,
             @RequestParam("image") MultipartFile imgFile) {
@@ -55,7 +62,7 @@ public class ImageController {
         }
     }
 
-    @PutMapping("/users/{user_id}") //-------check ok-----------
+    @PutMapping("/users/{user_id}/image") //-------check ok-----------
     public ResponseEntity<String> updateUserImage(
             @PathVariable("user_id") Integer userId,
             @RequestParam("image") MultipartFile imgFile) {
@@ -69,13 +76,13 @@ public class ImageController {
         }
     }
 
-    @GetMapping("/places/{place_id}") //CHECK OK
+    @GetMapping("/places/{place_id}/gallery") //CHECK OK
     public ResponseEntity<List<Image>> getImagesByPlaceId(@PathVariable("place_id") Integer placeId) {
         Optional<List<Image>> images = imageService.getImagesByPlaceId(placeId);
         return images.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build()); // STATUS: 404 Not Found
     }
 
-    @PostMapping("/places/{place_id}") //CHECK OK
+    @PostMapping("/places/{place_id}/gallery") //CHECK OK
     public ResponseEntity<?> uploadImagesForPlace(
             @PathVariable("place_id") Integer placeId,
             @RequestParam("images") MultipartFile[] imgFiles
@@ -90,7 +97,7 @@ public class ImageController {
         }
     }
 
-    @GetMapping("/places/{place_id}/{image_id}") //CHECK OK
+    @GetMapping("/places/{place_id}/gallery/{image_id}") //CHECK OK
     public ResponseEntity<?> getPlaceImageById(
             @PathVariable("place_id") Integer placeId,
             @PathVariable("image_id") Integer imageId
@@ -105,7 +112,7 @@ public class ImageController {
         }
     }
 
-    @DeleteMapping("/places/{place_id}/{image_id}") //CHECK OK
+    @DeleteMapping("/places/{place_id}/gallery/{image_id}") //CHECK OK
     public ResponseEntity<?> deletePlaceImageById(@PathVariable("place_id") Integer placeId, @PathVariable("image_id") Integer imageId) {
         try {
             imageService.deletePlacesImage(placeId, imageId);

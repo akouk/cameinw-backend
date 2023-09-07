@@ -1,6 +1,8 @@
 package com.cameinw.cameinwbackend.place.request;
 
 import com.cameinw.cameinwbackend.place.enums.PaymentMethod;
+import com.cameinw.cameinwbackend.place.model.Place;
+import com.cameinw.cameinwbackend.user.model.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -28,8 +30,9 @@ public class RegulationRequest {
     private boolean areEventsAllowed;
     private boolean smokingAllowed;
     private String quietHours;
-    @NotNull(message = "User ID cannot be null.")
-    private Integer userId;
+    @NotNull(message = "User cannot be null.")
+    private User user;
+
 
     public void validate() {
         if (!isValidPaymentMethode(paymentMethod)) {
@@ -46,3 +49,29 @@ public class RegulationRequest {
                 .collect(Collectors.joining(", "));
     }
 }
+
+// ------------------------ EXAMPLES -----------------------
+
+//           --Create Regulation--
+//
+//{
+//    "arrivalTime": "13:00",
+//    "departureTime": "11:00",
+//    "paymentMethod": "CASH_AND_CARD",
+//    "user" : {
+//        "id" : 2
+//            }
+//}
+
+
+//           --Update Regulation--
+//
+//{
+//    "arrivalTime": "13:00",
+//    "cancellationPolicy": "Reservations cannot be cancelled",
+//    "departureTime": "11:00",
+//    "paymentMethod": "CASH_AND_CARD",
+//    "user" : {
+//        "id" : 2
+//            }
+//}

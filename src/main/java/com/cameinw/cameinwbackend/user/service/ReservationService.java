@@ -8,8 +8,7 @@ import com.cameinw.cameinwbackend.user.request.ReservationRequest;
 import java.util.List;
 
 public interface ReservationService {
-    Reservation makeReservation(Integer place_id, ReservationRequest reservationRequest);
-    List<Reservation> getReservationsByUserId (Integer userId);
+    Reservation makeReservation(ReservationRequest reservationRequest);
     Reservation getReservationById(Integer reservationId);
     User getUserByReservationId(Integer reservationId);
     Place getPlaceByReservationId(Integer reservationId);

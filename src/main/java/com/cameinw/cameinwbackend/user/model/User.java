@@ -1,7 +1,6 @@
 package com.cameinw.cameinwbackend.user.model;
 
 import com.cameinw.cameinwbackend.image.model.Image;
-import com.cameinw.cameinwbackend.place.model.Regulation;
 import com.cameinw.cameinwbackend.user.enums.Role;
 import com.cameinw.cameinwbackend.place.model.Place;
 
@@ -54,14 +53,20 @@ public class User implements UserDetails{
     private String imageName = "userImg.jpg";
 
 
-
     @Column(name="role")
     @Enumerated(EnumType.STRING)
     private Role role;
+//
+//    @OneToMany(cascade = CascadeType.REMOVE)
+//    @JoinColumn(name = "user_id", referencedColumnName = "id")
+//    private List<Place> places;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "place_id", referencedColumnName = "id")
-    //@JsonIgnore
+//    @OneToMany(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "place_id", referencedColumnName = "id")
+//    //@JsonIgnore
+//    private List<Place> places;
+
+    @OneToMany(mappedBy = "user")
     private List<Place> places;
 
     @OneToMany(mappedBy = "user")

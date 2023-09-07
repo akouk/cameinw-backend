@@ -1,6 +1,7 @@
 package com.cameinw.cameinwbackend.place.request;
 
-import jakarta.persistence.Column;
+import com.cameinw.cameinwbackend.place.model.Place;
+import com.cameinw.cameinwbackend.user.model.User;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,27 @@ public class FacilityRequest {
     private Boolean hasbreakfast;
     private boolean hasbalcony;
     private boolean hasSwimmingPool;
-    @NotNull(message = "User ID cannot be null.")
-    private Integer userId;
+    @NotNull(message = "User cannot be null.")
+    private User user;
 }
+
+// ------------------------ EXAMPLES -----------------------
+
+//           --Create Facility--
+//
+//{
+//    "hasbreakfast": true,
+//    "user" : {
+//        "id" : 2
+//    }
+//}
+
+//           --Update Facility--
+//
+//{
+//    "hasFreeWiFi" : true,
+//    "hasbreakfast": true,
+//    "user" : {
+//        "id" : 2
+//    }
+//}

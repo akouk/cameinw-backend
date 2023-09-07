@@ -7,6 +7,7 @@ import com.cameinw.cameinwbackend.authorization.service.AuthenticationService;
 import com.cameinw.cameinwbackend.exception.ResourceAlreadyExistException;
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.user.repository.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,11 +27,10 @@ public class AuthenticationController {
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping("/register") //CHECK OK
+    @PostMapping("/register") //!!CHECK OK!!
     public ResponseEntity<Object> register(
-            @RequestBody RegisterRequest registerRequest
+            @Valid  @RequestBody RegisterRequest registerRequest
     ) {
-        System.out.println(userRepository.findByEmail(registerRequest.getEmail()));
         if (userRepository.findByEmail(registerRequest.getEmail()).isEmpty() &&
                 userRepository.findByTheUserName(registerRequest.getTheUserName()).isEmpty())
         {
@@ -41,9 +41,9 @@ public class AuthenticationController {
     }
 
 
-    @PostMapping("/login") //CHECK OK
+    @PostMapping("/login") //!!CHECK OK!!
     public ResponseEntity<AuthenticationResponse> login(
-            @RequestBody LoginRequest loginRequest
+            @Valid @RequestBody LoginRequest loginRequest
     ) {
         // Check if the user exists, if not, throw ResourceNotFoundException
         if (!userRepository.findByEmail(loginRequest.getEmail()).isPresent()) {

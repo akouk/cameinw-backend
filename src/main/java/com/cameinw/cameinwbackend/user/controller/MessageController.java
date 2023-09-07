@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/messages")
+@RequestMapping("/api")
 public class MessageController {
     private final MessageService messageService;
 
@@ -20,10 +20,9 @@ public class MessageController {
     @Autowired
     public MessageController(MessageService messageService) {
         this.messageService = messageService;
-
     }
 
-    @GetMapping("/{user_id}")
+    @GetMapping("/users/{user_id}/messages") // !!!CHECK OK !!
     public ResponseEntity<List<Message>> getUsersMessages(@PathVariable("user_id") Integer userId) {
         Optional<List<Message>> messages = messageService.getMessagesPerUser(userId);
         return messages
@@ -31,28 +30,27 @@ public class MessageController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/{user_Id1}/{user_Id2}/chat")
+    @GetMapping("/users/{user_id}/messages/{otherUser_id}") // !!!CHECK OK !!
     public ResponseEntity<List<Message>> getUsersChat(
-            @PathVariable("user_Id1") Integer userId1,
-            @PathVariable("user_Id2") Integer userId2
+            @PathVariable("user_id") Integer userId,
+            @PathVariable("otherUser_id") Integer otherUserId
     ) {
-        Optional<List<Message>> chatHistory = messageService.getChatHistory(userId1, userId2);
+        Optional<List<Message>> chatHistory = messageService.getChatHistory(userId, otherUserId);
         return chatHistory
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/{sender_id}/{receiver_id}/send")
-    public ResponseEntity<String> createMessage(
-            @PathVariable("sender_id") Integer senderId,
-            @PathVariable("receiver_id") Integer receiverId,
+    @PostMapping("/users/{user_id}/messages/{otherUser_id}") // !!! CHECK OK !!
+    public ResponseEntity<Message> createMessage(
+            @PathVariable("user_id") Integer userId,
+            @PathVariable("otherUser_id") Integer otherUserId,
             @RequestParam("message") String messageText) {
-
         try {
-            Message newMessage = messageService.createMessage(senderId, receiverId, messageText);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Message successfully created."); // STATUS: 201
-        } catch (ResourceNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+            Message newMessage = messageService.createMessage(userId, otherUserId, messageText);
+            return ResponseEntity.ok(newMessage);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 }
