@@ -1,6 +1,5 @@
 package com.cameinw.cameinwbackend.place.model;
 
-import com.cameinw.cameinwbackend.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
@@ -41,12 +40,6 @@ public class Facility {
 
     @Column(name = "swimming_pool")
     private boolean hasSwimmingPool;
-
-//    @OneToOne
-//    @JoinColumn(name = "user_id", referencedColumnName = "id")
-//    @OnDelete(action = OnDeleteAction.CASCADE)
-//    @JsonIgnore
-//    private User user;
 
     @OneToOne
     @JoinColumn(name = "place_id", referencedColumnName = "id")

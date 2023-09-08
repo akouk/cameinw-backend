@@ -53,12 +53,6 @@ public class Regulation {
     private String quietHours;
 
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore
-    private User user;
-
-    @OneToOne
     @JoinColumn(name = "place_id", referencedColumnName = "id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore

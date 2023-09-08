@@ -85,10 +85,7 @@ public class Place {
 
     @OneToMany(mappedBy = "place")
     private List<Review> reviews;
-//
-//    @OneToMany(mappedBy = "place")
-//    private List<Availability> availabilities;
-//
+
     @OneToMany(mappedBy = "place")
     //@JsonIgnore
     private List<Reservation> reservations;

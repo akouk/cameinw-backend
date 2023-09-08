@@ -4,26 +4,34 @@ import com.cameinw.cameinwbackend.exception.CustomUserFriendlyException;
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.place.model.Place;
 import com.cameinw.cameinwbackend.place.repository.PlaceRepository;
+import com.cameinw.cameinwbackend.place.request.AvailabilityRequest;
 import com.cameinw.cameinwbackend.place.request.PlaceRequest;
 import com.cameinw.cameinwbackend.place.service.PlaceService;
 import com.cameinw.cameinwbackend.user.enums.Role;
+import com.cameinw.cameinwbackend.user.model.Reservation;
 import com.cameinw.cameinwbackend.user.model.User;
+import com.cameinw.cameinwbackend.user.repository.ReservationRepository;
 import com.cameinw.cameinwbackend.user.repository.UserRepository;
+import com.cameinw.cameinwbackend.utilities.GeoUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PlaceServiceImpl implements PlaceService {
     private final UserRepository userRepository;
     private final PlaceRepository placeRepository;
+    private final ReservationRepository reservationRepository;
 
     @Autowired
-    public PlaceServiceImpl(UserRepository userRepository, PlaceRepository placeRepository) {
+    public PlaceServiceImpl(UserRepository userRepository, PlaceRepository placeRepository, ReservationRepository reservationRepository) {
         this.userRepository = userRepository;
         this.placeRepository = placeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     @Override
@@ -173,4 +181,60 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     private Place savePlace(Place place) {return  placeRepository.save(place);}
+
+    @Override
+    public List<Place> getAvailablePlaces(AvailabilityRequest availabilityRequest) {
+        List<Place> allReservedPlaces = new ArrayList<>();
+
+        List<Place> places = placeRepository.findPlacesByCountryAndCity(
+                availabilityRequest.getCountry(),
+                availabilityRequest.getCity()
+        );
+
+        for (Place place : places) {
+            List<Reservation> allReservations = reservationRepository.findBetweenDates(
+                    availabilityRequest.getCheckIn(),
+                    availabilityRequest.getCheckOut(),
+                    place
+            );
+
+            allReservedPlaces.addAll(allReservations.stream()
+                    .map(Reservation::getPlace)
+                    .collect(Collectors.toList())
+            );
+        }
+
+        places.removeAll(allReservedPlaces);
+
+        if (!places.isEmpty()) {
+            return places;
+        } else {
+            return findNearbyPlaces(availabilityRequest);
+        }
+    }
+
+    private List<Place> findNearbyPlaces(AvailabilityRequest availabilityRequest) {
+        List<Place> allThePlaces = placeRepository.findAll();
+        List<Place> nearbyPlaces = new ArrayList<>();
+
+        for (Place place : allThePlaces) {
+            Double distance = computeGeoDistance(
+                    place.getLatitude(),
+                    place.getLongitude(),
+                    availabilityRequest.getLatitude(),
+                    availabilityRequest.getLongitude()
+            );
+
+            if (distance < 100000) {
+                nearbyPlaces.add(place);
+            }
+        }
+
+        return nearbyPlaces;
+    }
+
+    private double computeGeoDistance(double latRepo, double longRepo, double latReq, double longReq) {
+        return GeoUtils.computeGeoDistance(latRepo, longRepo, latReq, longReq);
+    }
+
 }

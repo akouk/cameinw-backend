@@ -3,7 +3,6 @@ package com.cameinw.cameinwbackend.user.service.implementation;
 import com.cameinw.cameinwbackend.exception.CustomUserFriendlyException;
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.place.model.Place;
-import com.cameinw.cameinwbackend.place.model.Regulation;
 import com.cameinw.cameinwbackend.place.repository.PlaceRepository;
 import com.cameinw.cameinwbackend.user.model.Reservation;
 import com.cameinw.cameinwbackend.user.model.Review;
@@ -13,7 +12,6 @@ import com.cameinw.cameinwbackend.user.repository.ReviewRepository;
 import com.cameinw.cameinwbackend.user.repository.UserRepository;
 import com.cameinw.cameinwbackend.user.request.ReviewRequest;
 import com.cameinw.cameinwbackend.user.service.ReviewService;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 

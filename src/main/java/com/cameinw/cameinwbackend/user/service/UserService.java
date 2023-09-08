@@ -1,8 +1,6 @@
 package com.cameinw.cameinwbackend.user.service;
 
 import com.cameinw.cameinwbackend.place.projection.PlaceProjection;
-import com.cameinw.cameinwbackend.user.model.Reservation;
-import com.cameinw.cameinwbackend.user.model.Review;
 import com.cameinw.cameinwbackend.user.model.User;
 
 import java.util.List;

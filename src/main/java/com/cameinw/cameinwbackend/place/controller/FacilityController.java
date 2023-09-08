@@ -4,7 +4,6 @@ import com.cameinw.cameinwbackend.exception.CustomUserFriendlyException;
 import com.cameinw.cameinwbackend.exception.ResourceAlreadyExistException;
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.place.model.Facility;
-import com.cameinw.cameinwbackend.place.model.Place;
 import com.cameinw.cameinwbackend.place.request.FacilityRequest;
 import com.cameinw.cameinwbackend.place.service.FacilityService;
 import jakarta.validation.Valid;

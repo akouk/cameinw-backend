@@ -3,7 +3,6 @@ package com.cameinw.cameinwbackend.place.controller;
 import com.cameinw.cameinwbackend.exception.CustomUserFriendlyException;
 import com.cameinw.cameinwbackend.exception.ResourceAlreadyExistException;
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
-import com.cameinw.cameinwbackend.place.model.Place;
 import com.cameinw.cameinwbackend.place.model.Regulation;
 import com.cameinw.cameinwbackend.place.request.RegulationRequest;
 import com.cameinw.cameinwbackend.place.service.RegulationService;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")

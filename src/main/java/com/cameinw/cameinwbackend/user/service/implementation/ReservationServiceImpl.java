@@ -2,7 +2,6 @@ package com.cameinw.cameinwbackend.user.service.implementation;
 
 import com.cameinw.cameinwbackend.exception.CustomUserFriendlyException;
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
-import com.cameinw.cameinwbackend.place.model.Facility;
 import com.cameinw.cameinwbackend.place.model.Place;
 import com.cameinw.cameinwbackend.place.repository.PlaceRepository;
 import com.cameinw.cameinwbackend.user.model.Reservation;
@@ -20,7 +19,6 @@ import java.util.List;
 public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
-
     private final PlaceRepository placeRepository;
 
 

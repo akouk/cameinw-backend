@@ -3,6 +3,7 @@ package com.cameinw.cameinwbackend.place.controller;
 import com.cameinw.cameinwbackend.exception.CustomUserFriendlyException;
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.place.model.Place;
+import com.cameinw.cameinwbackend.place.request.AvailabilityRequest;
 import com.cameinw.cameinwbackend.place.request.PlaceRequest;
 import com.cameinw.cameinwbackend.place.service.PlaceService;
 import jakarta.validation.Valid;
@@ -13,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
@@ -91,4 +91,17 @@ public class PlaceController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
+
+    @GetMapping("/availability")
+    public ResponseEntity<List<Place>> getAvailablePlaces(
+            @Valid @RequestBody AvailabilityRequest availabilityRequest) {
+
+        List<Place> availablePlaces = placeService.getAvailablePlaces(availabilityRequest);
+        if (availablePlaces.size()>0) {
+            return ResponseEntity.ok(availablePlaces);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
 }
