@@ -32,6 +32,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
             "AND a.checkOut < ?2)) ")
     List<Reservation> findBetweenDates(Date checkIn, Date checkOut, Place place);
 
-    @Query("SELECT r FROM Reservation r WHERE r.user = :user AND r.place = :place")
+    @Query(value = "SELECT r FROM Reservation r WHERE r.user = :user AND r.place = :place")
     List<Reservation> findByUserAndPlace(@Param("user") User user, @Param("place") Place place);
 }

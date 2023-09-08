@@ -1,14 +1,9 @@
 package com.cameinw.cameinwbackend.user.service.implementation;
 
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
-import com.cameinw.cameinwbackend.place.model.Place;
 import com.cameinw.cameinwbackend.place.repository.PlaceRepository;
 import com.cameinw.cameinwbackend.place.projection.PlaceProjection;
-import com.cameinw.cameinwbackend.user.model.Reservation;
-import com.cameinw.cameinwbackend.user.model.Review;
 import com.cameinw.cameinwbackend.user.model.User;
-import com.cameinw.cameinwbackend.user.repository.ReservationRepository;
-import com.cameinw.cameinwbackend.user.repository.ReviewRepository;
 import com.cameinw.cameinwbackend.user.repository.UserRepository;
 import com.cameinw.cameinwbackend.user.service.UserService;
 import jakarta.transaction.Transactional;
@@ -23,20 +18,14 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PlaceRepository placeRepository;
-    private final ReservationRepository reservationRepository;
-    private final ReviewRepository reviewRepository;
 
     @Autowired
     public UserServiceImpl(
             UserRepository userRepository,
-            PlaceRepository placeRepository,
-            ReservationRepository reservationRepository,
-            ReviewRepository reviewRepository
+            PlaceRepository placeRepository
     ) {
         this.userRepository = userRepository;
         this.placeRepository = placeRepository;
-        this.reservationRepository = reservationRepository;
-        this.reviewRepository = reviewRepository;
     }
 
     @Override
@@ -78,18 +67,6 @@ public class UserServiceImpl implements UserService {
     public Optional<List<PlaceProjection>> getPlacesByUserId(Integer userId) {
         User user = getUserById(userId);
         return placeRepository.findPlacesByUserId(userId);
-    }
-
-    @Override
-    public List<Reservation> getReservationsByUserId (Integer userId){
-        User user = getUserById(userId);
-        return reservationRepository.findByUser(user);
-    }
-
-    @Override
-    public List<Review> getReviewsByUserId(Integer userId) {
-        User user = getUserById(userId);
-        return reviewRepository.findByUser(user);
     }
 
     private User getUserById(Integer userId) {

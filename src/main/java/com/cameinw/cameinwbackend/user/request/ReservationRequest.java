@@ -19,8 +19,20 @@ public class ReservationRequest {
     private Date checkIn;
     @NotNull(message = "Check out cannot be null.")
     private Date checkOut;
-    @NotNull(message = "Place ID cannot be null.")
-    Place place;
+//    @NotNull(message = "Place ID cannot be null.")
+//    Place place;
     @NotNull(message = "User ID cannot be null.")
     User user;
 }
+
+// ------------------------ EXAMPLE -----------------------
+
+//           --Create Reservation--
+//
+//{
+//    "checkIn": "2023-09-10",
+//    "checkOut": "2023-09-15",
+//    "user": {
+//        "id": 2
+//            }
+//}

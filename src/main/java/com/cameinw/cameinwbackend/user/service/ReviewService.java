@@ -10,13 +10,11 @@ import java.util.Optional;
 
 public interface ReviewService {
     List<Review> getAllReviews();
-    Review createReview(ReviewRequest reviewRequest);
-    Review getReviewByReviewId(Integer reviewId);
-    Review updateReview(Integer reviewId, ReviewRequest reviewRequest);
-    void deleteReview(Integer reviewId);
-    User getUserOfReview(Integer reviewId);
-    Place getPlaceOfReview(Integer reviewId);
-
-
-    Optional<List<Review>> getAllReviewsForPlace(Integer placeId);
+    Review createReview(Integer placeId, ReviewRequest reviewRequest);
+    Review updateReview(Integer userId, Integer reviewId, ReviewRequest reviewRequest);
+    void deleteReview(Integer userId, Integer reviewId);
+    List<Review> getReviewsByUserId(Integer userId);
+    Review getReviewByUserId(Integer userId, Integer reviewId);
+    List<Review> getReviewsByPlaceId(Integer placeId);
+    Review getReviewByPlaceId(Integer placeId, Integer reviewId);
 }

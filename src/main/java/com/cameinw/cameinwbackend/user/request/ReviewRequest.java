@@ -1,27 +1,57 @@
 package com.cameinw.cameinwbackend.user.request;
 
-import com.cameinw.cameinwbackend.place.model.Place;
+import com.cameinw.cameinwbackend.user.enums.PropertyRating;
 import com.cameinw.cameinwbackend.user.model.User;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewRequest {
-    @NotNull(message = "Score cannot be null.")
-    @PositiveOrZero(message = "Score number cannot be negative.")
-    private Integer score;
-    @NotBlank(message = "Comment cannot be null or empty.")
+    @NotNull(message = "Rating number cannot be negative.")
+    private PropertyRating rating;
     private String comment;
     @NotNull(message = "User cannot be null.")
     private User user;
-    @NotNull(message = "Place cannot be null.")
-    private Place place;
+
+    public void validate() {
+        if (!isValidRating(rating)) {
+            throw new IllegalArgumentException("Invalid score. Available property ratings are: " + getPropertyRatingList());        }
+    }
+
+    private boolean isValidRating(PropertyRating propertyRating) {
+        return Arrays.asList(PropertyRating.values()).contains(propertyRating);
+    }
+
+    private String getPropertyRatingList() {
+        return Arrays.stream(PropertyRating.values())
+                .map(Enum::name)
+                .collect(Collectors.joining(", "));
+    }
 }
+
+
+// ------------------------ EXAMPLES -----------------------
+
+//           --Create Review--
+//
+//{
+//    "rating": "FIVE_STARS",
+//    "user": {
+//        "id": 2
+//            }
+//}
+
+//           --Update Review--
+//
+//{
+//    "comment": "Excellent apartment!"
+//}

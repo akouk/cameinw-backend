@@ -1,10 +1,7 @@
 package com.cameinw.cameinwbackend.user.controller;
 
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
-import com.cameinw.cameinwbackend.place.model.Place;
 import com.cameinw.cameinwbackend.place.projection.PlaceProjection;
-import com.cameinw.cameinwbackend.user.model.Reservation;
-import com.cameinw.cameinwbackend.user.model.Review;
 import com.cameinw.cameinwbackend.user.model.User;
 import com.cameinw.cameinwbackend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
@@ -70,26 +66,6 @@ public class UserController {
         try {
             List<PlaceProjection> places = userService.getPlacesByUserId(userId).orElse(Collections.emptyList());
             return new ResponseEntity<>(places, HttpStatus.OK);
-        } catch (ResourceNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }
-    }
-
-    @GetMapping("/{user_id}/reservations") //
-    public ResponseEntity<?> getReservationsByUserId(@PathVariable("user_id") Integer userId) {
-        try {
-            List<Reservation> reservations = userService.getReservationsByUserId(userId);
-            return ResponseEntity.status(HttpStatus.OK).body(reservations);
-        } catch (ResourceNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }
-    }
-
-    @GetMapping("/{user_id}/reviews")  //
-    public ResponseEntity<?> getReviewsByUserId(@PathVariable("user_id") Integer userId) {
-        try {
-            List<Review> reviews = userService.getReviewsByUserId(userId);
-            return ResponseEntity.status(HttpStatus.OK).body(reviews);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }

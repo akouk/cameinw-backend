@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
@@ -21,16 +22,17 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/reservations")
+@RequestMapping("/api")
 public class ReservationController {
     private final ReservationService reservationService;
 
 
-    @PostMapping()
+    @PostMapping("/places/{place_id}/reservations") // !!! CHECK OK!!
     public ResponseEntity<String> makeReservation(
+            @PathVariable("place_id") Integer placeId,
             @Valid @RequestBody ReservationRequest reservationRequest) {
         try {
-            Reservation createReservation = reservationService.makeReservation(reservationRequest);
+            Reservation createReservation = reservationService.makeReservation(placeId, reservationRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body("Reservation successfully created.");
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
@@ -39,34 +41,47 @@ public class ReservationController {
         }
     }
 
-    @GetMapping("/{reservation_id}")
-    public ResponseEntity<Object> getReservationById(@PathVariable("reservation_id") Integer reservationId) {
+    @GetMapping("/users/{user_id}/reservations") // !!! CHECK OK!!
+    public ResponseEntity<?> getReservationsByUserId(@PathVariable("user_id") Integer userId) {
         try {
-            Reservation reservation = reservationService.getReservationById(reservationId);
+            List<Reservation> reservations = reservationService.getReservationsByUserId(userId);
+            return ResponseEntity.status(HttpStatus.OK).body(reservations);
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+
+    @GetMapping("/users/{user_id}/reservations/{reservation_id}") // !!! CHECK OK!!
+    public ResponseEntity<?> getReservationByUserId(
+            @PathVariable("user_id") Integer userId,
+            @PathVariable("reservation_id") Integer reservationId) {
+        try {
+            Reservation reservation = reservationService.getReservationByUserId(userId, reservationId);
             return ResponseEntity.status(HttpStatus.OK).body(reservation);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
 
-    @GetMapping("/{reservation_id}/user")
-    public ResponseEntity<Object> getUserByReservationId(@PathVariable("reservation_id") Integer reservationId) {
+    @GetMapping("/places/{place_id}/reservations") // !!! CHECK OK!!
+    public ResponseEntity<?> getReservationsByPlaceId(@PathVariable("place_id") Integer placeId) {
         try {
-            User user = reservationService.getUserByReservationId(reservationId);
-            return ResponseEntity.status(HttpStatus.OK).body(user);
+            List<Reservation> reservations = reservationService.getReservationsByPlaceId(placeId);
+            return ResponseEntity.status(HttpStatus.OK).body(reservations);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
 
-    @GetMapping("/{reservation_id}/place")
-    public ResponseEntity<Object> getPlaceByReservationId(@PathVariable("reservation_id") Integer reservationId) {
+    @GetMapping("/places/{place_id}/reservations/{reservation_id}") // !!! CHECK OK!!
+    public ResponseEntity<?> getReservationByPlaceId(
+            @PathVariable("place_id") Integer placeId,
+            @PathVariable("reservation_id") Integer reservationId) {
         try {
-            Place place = reservationService.getPlaceByReservationId(reservationId);
-            return ResponseEntity.status(HttpStatus.OK).body(place);
+            Reservation reservation = reservationService.getReservationByPlaceId(placeId, reservationId);
+            return ResponseEntity.status(HttpStatus.OK).body(reservation);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
-
 }

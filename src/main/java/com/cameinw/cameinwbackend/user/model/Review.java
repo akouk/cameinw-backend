@@ -1,6 +1,8 @@
 package com.cameinw.cameinwbackend.user.model;
 
+import com.cameinw.cameinwbackend.utilities.Audit;
 import com.cameinw.cameinwbackend.place.model.Place;
+import com.cameinw.cameinwbackend.user.enums.PropertyRating;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,18 +19,17 @@ import org.hibernate.annotations.OnDeleteAction;
 @AllArgsConstructor
 @Entity
 @Table(name="reviews")
-
-public class Review {
+public class Review extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "score")
-    private Integer score;
+    @Column(name = "rating")
+    @Enumerated(EnumType.STRING)
+    private PropertyRating rating;
 
     @Column(name = "comment")
     private String comment;
-
 
     @ManyToOne
     @JoinColumn(name = "place_id", nullable = false)

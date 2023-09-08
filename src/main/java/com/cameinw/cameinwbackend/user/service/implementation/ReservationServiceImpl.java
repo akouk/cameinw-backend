@@ -2,6 +2,7 @@ package com.cameinw.cameinwbackend.user.service.implementation;
 
 import com.cameinw.cameinwbackend.exception.CustomUserFriendlyException;
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
+import com.cameinw.cameinwbackend.place.model.Facility;
 import com.cameinw.cameinwbackend.place.model.Place;
 import com.cameinw.cameinwbackend.place.repository.PlaceRepository;
 import com.cameinw.cameinwbackend.user.model.Reservation;
@@ -18,7 +19,6 @@ import java.util.List;
 @Service
 public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
-
     private final UserRepository userRepository;
 
     private final PlaceRepository placeRepository;
@@ -34,41 +34,44 @@ public class ReservationServiceImpl implements ReservationService {
 
     }
 
-    @Override
-    public Reservation getReservationById(Integer reservationId) {
-        return reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Reservation not found."));
+    public Reservation makeReservation(Integer placeId, ReservationRequest reservationRequest) {
+        Place place = getPlaceById(placeId);
+        User user = getUserById(reservationRequest.getUser().getId());
+        checkUserOwnership(place, user.getId());
+
+        checkReservationValidation(reservationRequest, place);
+        Reservation reservation = createReservation(reservationRequest, place, user);
+        return saveReservation(reservation);
     }
 
     @Override
-    public User getUserByReservationId(Integer reservationId) {
+    public List<Reservation> getReservationsByUserId (Integer userId){
+        User user = getUserById(userId);
+        List<Reservation> reservations = reservationRepository.findByUser(user);
+        checkIfReservationsExistForResource(reservations);
+        return reservations;
+    }
+
+    @Override
+    public Reservation getReservationByUserId (Integer userId, Integer reservationId){
+        User user = getUserById(userId);
         Reservation reservation = getReservationById(reservationId);
-        return reservation.getUser();
+        return reservation;
     }
 
     @Override
-    public Place getPlaceByReservationId(Integer reservationId) {
-        Reservation reservation = getReservationById(reservationId);
-        return reservation.getPlace();
+    public List<Reservation> getReservationsByPlaceId (Integer placeId){
+        Place place = getPlaceById(placeId);
+        List<Reservation> reservations = reservationRepository.findByPlace(place);
+        checkIfReservationsExistForResource(reservations);
+        return reservations;
     }
 
-    public Reservation makeReservation(ReservationRequest reservationRequest) {
-        Place place = reservationRequest.getPlace();
-        getPlaceById(place.getId());
-        User user = reservationRequest.getUser();
-        getUserById(user.getId());
-
-        // Check if the user owns the place
-        if (isUserOwnerOfPlace(place, user.getId())) {
-            throw new CustomUserFriendlyException("You cannot make a reservation for your own place.");
-        }
-
-        if (isValidReservation(reservationRequest, place)) {
-            Reservation newReservation = createReservation(reservationRequest, place, user);
-            return saveReservation(newReservation);
-        } else {
-            throw new CustomUserFriendlyException("Failed to create reservation.");
-        }
+    @Override
+    public Reservation getReservationByPlaceId (Integer placeId, Integer reservationId){
+        Place place = getPlaceById(placeId);
+        Reservation reservation = getReservationById(reservationId);
+        return reservation;
     }
 
     private Place getPlaceById(Integer placeId) {
@@ -81,6 +84,29 @@ public class ReservationServiceImpl implements ReservationService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
     }
 
+    private Reservation getReservationById(Integer reservationId) {
+        return reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Reservation not found."));
+    }
+
+    public void checkIfReservationsExistForResource(List<Reservation> reservations) {
+        if (reservations.isEmpty()) {
+            throw new ResourceNotFoundException("No reservations found.");
+        }
+    }
+
+
+    private boolean isUserOwnerOfPlace(Place place, Integer userId) {
+        User placeOwner = place.getUser();
+        return placeOwner != null && placeOwner.getId().equals(userId);
+    }
+
+    private void checkUserOwnership(Place place, Integer userId) {
+        if (!isUserOwnerOfPlace(place, userId)) {
+            throw new CustomUserFriendlyException("User is not the owner of the place.");
+        }
+    }
+
     private boolean isValidReservation(ReservationRequest reservationRequest, Place place) {
         List<Reservation> existingReservations = reservationRepository.findBetweenDates(
                 reservationRequest.getCheckIn(),
@@ -91,9 +117,10 @@ public class ReservationServiceImpl implements ReservationService {
                 && reservationRequest.getCheckIn().compareTo(reservationRequest.getCheckOut()) < 0;
     }
 
-    private boolean isUserOwnerOfPlace(Place place, Integer userId) {
-        User placeOwner = place.getUser();
-        return placeOwner != null && placeOwner.getId().equals(userId);
+    private void checkReservationValidation(ReservationRequest reservationRequest, Place place) {
+        if (!isValidReservation(reservationRequest, place)) {
+            throw new CustomUserFriendlyException("Failed to create reservation.");
+        }
     }
 
     private Reservation createReservation(ReservationRequest reservationRequest, Place place, User user) {

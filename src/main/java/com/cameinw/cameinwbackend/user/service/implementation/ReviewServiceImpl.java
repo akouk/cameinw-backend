@@ -17,8 +17,8 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -45,80 +45,76 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<Review> getAllReviews() {
         List<Review> reviews = reviewRepository.findAll();
-
-        if (reviews.isEmpty()) {
-            throw new ResourceNotFoundException("No reviews were found.");
-        }
+        checkIfReviewsWereFound(reviews);
         return reviews;
     }
 
     @Override
     @Transactional
-    public Review createReview(ReviewRequest reviewRequest) {
-        // Retrieve the user and place associated with the review
-        User user = reviewRequest.getUser();
-        getUserById(user.getId());
-        Place place = reviewRequest.getPlace();
-        getPlaceById(place.getId());
+    public Review createReview(Integer placeId, ReviewRequest reviewRequest) {
+        Place place = getPlaceById(placeId);
+        User user = getUserById(reviewRequest.getUser().getId());
+        checkIfCanPostReview(user, place);
+        checkIfUserHasAlreadyReviewedThePlace(user, place);
 
-        // Check if the user has made a reservation for the specified place
-        //boolean hasReservation = userHasReservationForPlace(user, place);
-
-        if (userHasReservationForPlace(user, place)) {
-            // The user has a reservation for the place, so save the review
-            Review newReview = createNewReview(reviewRequest, user, place);
-            return saveReview(newReview);
-        } else {
-            throw new CustomUserFriendlyException("User has not made a reservation for this place.");
-        }
+        Review newReview = createNewReview(reviewRequest, user, place);
+        return saveReview(newReview);
     }
 
     @Override
-    public Review getReviewByReviewId(Integer reviewId) {
-        return getReviewById(reviewId);
+    public List<Review> getReviewsByUserId(Integer userId) {
+        User user = getUserById(userId);
+        List<Review> reviews = reviewRepository.findByUser(user);
+        checkIfReviewsWereFound(reviews);
+        return reviews;
+    }
+
+    @Override
+    public Review getReviewByUserId(Integer userId, Integer reviewId) {
+        User user = getUserById(userId);
+        Review review = getReviewById(reviewId);
+        return review;
+    }
+
+    @Override
+    public List<Review> getReviewsByPlaceId(Integer placeId) {
+        Place place = getPlaceById(placeId);
+        List<Review> reviews = reviewRepository.findByPlace(place);
+        checkIfReviewsWereFound(reviews);
+        return reviews;
+    }
+
+    @Override
+    public Review getReviewByPlaceId(Integer placeId, Integer reviewId) {
+        Place place = getPlaceById(placeId);
+        Review review = getReviewById(reviewId);
+        return review;
+    }
+
+
+    @Override
+    @Transactional
+    public Review updateReview(Integer userId, Integer reviewId, ReviewRequest reviewRequest) {
+        Review review = getReviewById(reviewId);
+
+        copyOnlyNonNullProperties(reviewRequest, review);
+        review.setUpdatedAt(LocalDateTime.now());
+        reviewRepository.flush();
+        return saveReview(review);
     }
 
     @Override
     @Transactional
-    public Review updateReview(Integer reviewId, ReviewRequest reviewRequest) {
-        User user = reviewRequest.getUser();
-        getUserById(user.getId());
-        Place place = reviewRequest.getPlace();
-        getPlaceById(place.getId());
-        Review updateReview = getReviewById(reviewId);
-
-        if (userHasReservationForPlace(user, place)) {
-            updateReview.setScore(reviewRequest.getScore());
-            updateReview.setComment(reviewRequest.getComment());
-            return saveReview(updateReview);
-        } else {
-            throw new CustomUserFriendlyException("User has not made a reservation for this place.");
-        }
-    }
-
-    @Override
-    @Transactional
-    public void deleteReview(Integer reviewId) {
+    public void deleteReview(Integer userId, Integer reviewId) {
+        User user = getUserById(userId);
         Review review = getReviewById(reviewId);
         reviewRepository.delete(review);
     }
 
-    @Override
-    public User getUserOfReview(Integer reviewId) {
-        Review review = getReviewById(reviewId);
-        return review.getUser();
-    }
-
-    @Override
-    public Place getPlaceOfReview(Integer reviewId) {
-        Review review = getReviewById(reviewId);
-        return review.getPlace();
-    }
-
-    @Override
-    public Optional<List<Review>> getAllReviewsForPlace(Integer placeId) {
-        return placeRepository.findById(placeId)
-                .map(Place::getReviews);
+    private void checkIfReviewsWereFound(List<Review> reviews) {
+        if (reviews.isEmpty()) {
+            throw new ResourceNotFoundException("No reviews were found.");
+        }
     }
 
     private Review getReviewById(Integer reviewId) {
@@ -140,16 +136,51 @@ public class ReviewServiceImpl implements ReviewService {
         return !reservations.isEmpty();
     }
 
+    private void checkIfCanPostReview(User user, Place place) {
+        if (!userHasReservationForPlace(user, place)) {
+           throw new CustomUserFriendlyException("User has not made a reservation for this place.");
+        }
+    }
+
+    private boolean hasUserReviewedPlace(User user, Place place) {
+        List<Review> existingReviews = reviewRepository.findByUserAndPlace(user, place);
+        return !existingReviews.isEmpty();
+    }
+
+    private void checkIfUserHasAlreadyReviewedThePlace(User user, Place place) {
+        if (hasUserReviewedPlace(user, place)) {
+            throw new CustomUserFriendlyException("You have already reviewed this place. You can only update your review.");
+        }
+    }
     private Review createNewReview(ReviewRequest reviewRequest, User user, Place place) {
-        return Review.builder()
-                .score(reviewRequest.getScore())
+        reviewRequest.validate();
+        LocalDateTime now = LocalDateTime.now();
+
+        Review review = Review.builder()
+                .rating(reviewRequest.getRating())
                 .comment(reviewRequest.getComment())
                 .user(user)
-                .place(place).build();
+                .place(place)
+                .build();
+
+        review.setCreatedAt(now);
+        review.setUpdatedAt(now);
+
+        return review;
+    }
+
+    private void copyOnlyNonNullProperties(ReviewRequest reviewRequest, Review review) {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (reviewRequest.getRating() != null) {
+            review.setRating(reviewRequest.getRating());
+        }
+        if (reviewRequest.getComment() != null) {
+            review.setComment(reviewRequest.getComment());
+        }
     }
 
     private Review saveReview(Review review) {
         return reviewRepository.save(review);
     }
-
 }

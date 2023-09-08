@@ -19,12 +19,12 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/reviews")
+@RequestMapping("/api")
 public class ReviewController {
     @Autowired
     private ReviewService reviewService;
 
-    @GetMapping() //CHECK OK!!
+    @GetMapping("/reviews") // CHECK OK!!
     public ResponseEntity<?>  getAllReviews() {
         try {
             List<Review> reviews = reviewService.getAllReviews();
@@ -34,10 +34,12 @@ public class ReviewController {
         }
     }
 
-    @PostMapping()
-    public ResponseEntity<String> createReview(@Valid  @RequestBody ReviewRequest reviewRequest) {
+    @PostMapping("/places/{place_id}/reviews") // !!CHECK OK!!
+    public ResponseEntity<String> createReview(
+            @PathVariable("place_id") Integer placeId,
+            @Valid  @RequestBody ReviewRequest reviewRequest) {
         try {
-            Review createReview = reviewService.createReview(reviewRequest);
+            Review createReview = reviewService.createReview(placeId, reviewRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body("Review successfully created.");
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
@@ -46,20 +48,13 @@ public class ReviewController {
         }
     }
 
-    @GetMapping("/{review_id}") //CHECK OK!!
-    public ResponseEntity<?> getReviewById(@PathVariable("review_id") Integer reviewId) {
+    @PutMapping("/users/{user_id}/reviews/{review_id}")
+    public ResponseEntity<String> updateReview(
+            @PathVariable("user_id") Integer userId,
+            @PathVariable("review_id") Integer reviewId,
+            @RequestBody ReviewRequest reviewRequest) {
         try {
-            Review review = reviewService.getReviewByReviewId((reviewId));
-            return ResponseEntity.status(HttpStatus.OK).body(review);
-        } catch (ResourceNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }
-    }
-
-    @PutMapping("/{review_id}") //CHECK OK
-    public ResponseEntity<String> updateReview(@PathVariable("review_id") Integer reviewId, @Valid @RequestBody ReviewRequest reviewRequest) {
-        try {
-            Review updateReview = reviewService.updateReview(reviewId, reviewRequest);
+            Review updateReview = reviewService.updateReview(userId, reviewId, reviewRequest);
             return ResponseEntity.status(HttpStatus.OK).body("Review successfully updated.");
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
@@ -68,32 +63,61 @@ public class ReviewController {
         }
     }
 
-    @DeleteMapping("/{review_id}") //CHECK OK
-    public ResponseEntity<?> deleteReview(@PathVariable("review_id") Integer reviewId) {
+    // Only the user who made the review can delete it!
+    @DeleteMapping("/users/{user_id}/reviews/{review_id}")
+    public ResponseEntity<?> deleteReview(
+            @PathVariable("user_id") Integer userId,
+            @PathVariable("review_id") Integer reviewId) {
         try {
-            reviewService.deleteReview(reviewId);
+            reviewService.deleteReview(userId, reviewId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Review deleted successfully.");
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (CustomUserFriendlyException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
     }
 
-    @GetMapping("/{review_id}/user") //CHECK OK
-    public ResponseEntity<?> getUserOfReview(@PathVariable("review_id") Integer reviewId) {
+    @GetMapping("/users/{user_id}/reviews")  // -----------
+    public ResponseEntity<?> getReviewsByUserId(@PathVariable("user_id") Integer userId) {
         try {
-            User user = reviewService.getUserOfReview(reviewId);
-            return ResponseEntity.status(HttpStatus.OK).body(user);
-
+            List<Review> reviews = reviewService.getReviewsByUserId(userId);
+            return ResponseEntity.status(HttpStatus.OK).body(reviews);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
 
-    @GetMapping("/{review_id}/place") //CHECK OK
-    public ResponseEntity<?> getPlaceOfReview(@PathVariable("review_id") Integer reviewId) {
+    @GetMapping("/users/{user_id}/reviews/{review_id}")  // -----------
+    public ResponseEntity<?> getReviewByUserId(
+            @PathVariable("user_id") Integer userId,
+            @PathVariable("review_id") Integer reviewId) {
         try {
-            Place place = reviewService.getPlaceOfReview(reviewId);
-            return ResponseEntity.status(HttpStatus.OK).body(place);
+            Review review = reviewService.getReviewByUserId(userId, reviewId);
+            return ResponseEntity.status(HttpStatus.OK).body(review);
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+
+
+    @GetMapping("/places/{place_id}/reviews")  // !!CHECK OK!!
+    public ResponseEntity<?> getReviewsByPlaceId(@PathVariable("place_id") Integer placeId) {
+        try {
+            List<Review> reviews = reviewService.getReviewsByPlaceId(placeId);
+            return ResponseEntity.status(HttpStatus.OK).body(reviews);
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+
+    @GetMapping("/places/{place_id}/reviews/{review_id}") // !!CHECK OK!!
+    public ResponseEntity<?> getReviewByPlaceId(
+            @PathVariable("place_id") Integer placeId,
+            @PathVariable("review_id") Integer reviewId) {
+        try {
+            Review review = reviewService.getReviewByPlaceId(placeId, reviewId);
+            return ResponseEntity.status(HttpStatus.OK).body(review);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
