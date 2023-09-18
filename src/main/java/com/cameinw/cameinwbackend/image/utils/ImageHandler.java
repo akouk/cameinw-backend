@@ -8,10 +8,11 @@ import lombok.Getter;
 import java.io.IOException;
 
 public class ImageHandler {
-    @Getter
-    private static String mainPath;
     private static final String USER_IMAGE_PATH = "users/";
     private static final String PLACES_IMAGE_PATH = "places/";
+
+    @Getter
+    private static String mainPath;
 
     public static void setMainPath(String mainPath) {
         ImageHandler.mainPath = mainPath;
@@ -44,6 +45,13 @@ public class ImageHandler {
     public static byte[] fetchUserImageBytes(User user) throws IOException {
         String imgName = user.getImageName();
         String imgPath = ImageHandler.getMainPath() + USER_IMAGE_PATH + user.getId() + "/" + imgName;
+
+        return FileUtils.readBytesFromFile(imgPath);
+    }
+
+    public static byte[] fetchPlacesMainImageBytes(Place place) throws IOException {
+        String imgName = place.getMainImage();
+        String imgPath = ImageHandler.getMainPath() + PLACES_IMAGE_PATH + place.getId() + "/" + imgName;
 
         return FileUtils.readBytesFromFile(imgPath);
     }

@@ -35,7 +35,6 @@ public class ReservationServiceImpl implements ReservationService {
     public Reservation makeReservation(Integer placeId, ReservationRequest reservationRequest) {
         Place place = getPlaceById(placeId);
         User user = getUserById(reservationRequest.getUser().getId());
-        checkUserOwnership(place, user.getId());
 
         checkReservationValidation(reservationRequest, place);
         Reservation reservation = createReservation(reservationRequest, place, user);
@@ -97,12 +96,6 @@ public class ReservationServiceImpl implements ReservationService {
     private boolean isUserOwnerOfPlace(Place place, Integer userId) {
         User placeOwner = place.getUser();
         return placeOwner != null && placeOwner.getId().equals(userId);
-    }
-
-    private void checkUserOwnership(Place place, Integer userId) {
-        if (!isUserOwnerOfPlace(place, userId)) {
-            throw new CustomUserFriendlyException("User is not the owner of the place.");
-        }
     }
 
     private boolean isValidReservation(ReservationRequest reservationRequest, Place place) {

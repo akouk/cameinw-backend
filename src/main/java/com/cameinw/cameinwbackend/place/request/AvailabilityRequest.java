@@ -25,4 +25,6 @@ public class AvailabilityRequest {
     private Double latitude;
     @NotNull(message = "Longitude method cannot be null.")
     private Double longitude;
+    @NotNull(message = "Guests cannot be null.")
+    private Integer guests;
 }

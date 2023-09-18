@@ -13,6 +13,8 @@ import com.cameinw.cameinwbackend.user.repository.UserRepository;
 import com.cameinw.cameinwbackend.image.utils.ImageHandler;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,7 +36,7 @@ public class ImageServiceImpl implements ImageService {
         this.placeRepository = placeRepository;
     }
 
-    private static final String IMAGES_PATH = "images/";
+    private static final String IMAGES_PATH = "/image_storage/";
     private static final String USER_IMAGE_PATH = "users/";
     private static final String PLACES_IMAGE_PATH = "places/";
 
@@ -50,10 +52,13 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public byte[] getUserImage(Integer userId) {
+    public ResponseEntity<byte[]> getUserImage(Integer userId) {
         User user = getUserById(userId);
         try {
-            return  ImageHandler.fetchUserImageBytes(user);
+            byte[] imgData = ImageHandler.fetchUserImageBytes(user);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(imgData);
         } catch (IOException e) {
         throw new CustomUserFriendlyException("Error while fetching the image.");
         }
@@ -74,13 +79,7 @@ public class ImageServiceImpl implements ImageService {
 
     private void saveSingleImage(Integer placeId, MultipartFile imgFile) {
         Place place = getPlaceById(placeId);
-
         String imgName = imgFile.getOriginalFilename();
-
-        Image image = new Image();
-        image.setImageName(imgName);
-        image.setPlace(place);
-        imageRepository.save(image);
 
         try {
             ImageHandler.createPlacesImageDirectory(placeId);
@@ -88,13 +87,74 @@ public class ImageServiceImpl implements ImageService {
         } catch (IOException e) {
             throw new CustomUserFriendlyException("Error while saving the image.");
         }
+
+        Image image = new Image();
+        image.setImageName(imgName);
+        image.setPlace(place);
+        imageRepository.save(image);
+    }
+
+    @Override
+    @Transactional
+    public void uploadMainImageForPlace(Integer placeId,  MultipartFile imgFile) {
+        Place place = getPlaceById(placeId);
+        String imgName = imgFile.getOriginalFilename();
+
+        try {
+            ImageHandler.createPlacesImageDirectory(placeId);
+            ImageHandler.saveImage(PLACES_IMAGE_PATH + placeId + "/" + imgName, imgFile.getBytes());
+        } catch (IOException e) {
+            throw new CustomUserFriendlyException("Error while saving the image.");
+        }
+
+        Image image = new Image();
+        image.setImageName(imgName);
+        image.setPlace(place);
+        imageRepository.save(image);
+
+        place.setMainImage(imgName);
+        placeRepository.save(place);
+
+    }
+
+    @Override
+    @Transactional
+    public void updateMainImageForPlace(Integer placeId,  MultipartFile imgFile) {
+        Place place = getPlaceById(placeId);
+        String imgName = imgFile.getOriginalFilename();
+
+        try {
+            ImageHandler.createPlacesImageDirectory(placeId);
+            ImageHandler.saveImage(PLACES_IMAGE_PATH + placeId + "/" + imgName, imgFile.getBytes());
+        } catch (IOException e) {
+            throw new CustomUserFriendlyException("Error while saving the image.");
+        }
+
+        place.setMainImage(imgName);
+        placeRepository.save(place);
+
+    }
+
+
+
+
+    @Override
+    public ResponseEntity<byte[]> getPlacesMainImage(Integer placeId) throws IOException {
+        Place place = getPlaceById(placeId);
+        try {
+            byte[] imgData = ImageHandler.fetchPlacesMainImageBytes(place);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(imgData);
+        } catch (IOException e) {
+            throw new CustomUserFriendlyException("Error while fetching the image.");
+        }
     }
 
     @Override
     @Transactional
     public void uploadUserImage(Integer userId, MultipartFile imgFile) {
         User user = getUserById(userId);
-
         String imgName = imgFile.getOriginalFilename();
 
         try {
@@ -104,8 +164,15 @@ public class ImageServiceImpl implements ImageService {
             throw new CustomUserFriendlyException("Error while saving the image.");
         }
 
+        Image image = new Image();
+        image.setImageName(imgName);
+        image.setUser(user);
+        imageRepository.save(image);
+
         user.setImageName(imgName);
         userRepository.save(user);
+
+
     }
 
     @Override
@@ -127,12 +194,13 @@ public class ImageServiceImpl implements ImageService {
             throw new CustomUserFriendlyException("Error while saving the image.");
         }
 
+
         user.setImageName(imgName);
         userRepository.save(user);
     }
 
     @Override
-    public byte[] getPlacesImage(Integer placeId, Integer imageId) {
+    public ResponseEntity<byte[]> getPlacesImage(Integer placeId, Integer imageId) {
         Place place = getPlaceById(placeId);
         Image img = getImageById(imageId);
 
@@ -141,7 +209,10 @@ public class ImageServiceImpl implements ImageService {
         }
 
         try {
-            return ImageHandler.fetchImageBytes(img.getPlace(), img.getImageName());
+            byte[] imgData = ImageHandler.fetchImageBytes(img.getPlace(), img.getImageName());
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(imgData);
         } catch (IOException e) {
             throw new CustomUserFriendlyException("Error while fetching the image.");
         }

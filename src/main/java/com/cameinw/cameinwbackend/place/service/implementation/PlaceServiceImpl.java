@@ -188,7 +188,9 @@ public class PlaceServiceImpl implements PlaceService {
 
         List<Place> places = placeRepository.findPlacesByCountryAndCity(
                 availabilityRequest.getCountry(),
-                availabilityRequest.getCity()
+                availabilityRequest.getCity(),
+                availabilityRequest.getGuests()
+
         );
 
         for (Place place : places) {

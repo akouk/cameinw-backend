@@ -29,8 +29,9 @@ public interface PlaceRepository extends JpaRepository<Place, Integer>{
     @Query(value ="SELECT a " +
             "FROM Place a " +
             "WHERE a.country = ?1 " +
-            "AND a.city = ?2 ")
-    List<Place> findPlacesByCountryAndCity(String country, String city);
+            "AND a.city = ?2 " +
+            "AND a.guests = ?3 ")
+    List<Place> findPlacesByCountryAndCity(String country, String city, Integer guests);
 
     @Query(value = "Select p FROM Place where p.latitude >= ?1 and p.latitude <= ?2 and p.longitude >= ?3 and p.longitude <= ?4 order by p.cost", nativeQuery = true)
     List<Place> getNearbyPlaces(double maxLat,

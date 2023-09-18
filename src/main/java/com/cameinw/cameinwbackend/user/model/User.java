@@ -66,6 +66,7 @@ public class User implements UserDetails{
 //    //@JsonIgnore
 //    private List<Place> places;
 
+
     @OneToMany(mappedBy = "user")
     private List<Place> places;
 

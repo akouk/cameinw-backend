@@ -19,7 +19,12 @@ public class CameinwBackendApplication {
 
 	@PostConstruct
 	public void init() {
-		ImageHandler.setMainPath("/main_image_storage/");
+
+		String baseDirectory = System.getProperty("user.dir"); // current working directory
+		String imageDirectory = baseDirectory + "/image_storage/"; // subdirectory for storing images
+		ImageHandler.setMainPath(imageDirectory); // main path to the image directory
+
+//		ImageHandler.setMainPath("./cameinw_image_storage/");
 	}
 
 }

@@ -29,13 +29,13 @@ public class Image {
     private String imageName;
 
     @ManyToOne
-    @JoinColumn(name = "place_id", nullable = false)
+    @JoinColumn(name = "place_id", nullable = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     private Place place;
 
     @OneToOne
-    @JoinColumn(name = "user_id", unique = true)
+    @JoinColumn(name = "user_id", nullable = true, unique = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 }

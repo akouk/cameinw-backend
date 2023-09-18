@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface ImageRepository extends JpaRepository<Image, Integer>{
     Optional<List<Image>> findByPlaceId(Integer placeId);
+    Optional<Image> findByUserId(Integer userId);
 }
