@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -182,23 +183,54 @@ public class PlaceServiceImpl implements PlaceService {
 
     private Place savePlace(Place place) {return  placeRepository.save(place);}
 
+//    @Override
+//    public List<Place> getAvailablePlaces(AvailabilityRequest availabilityRequest) {
+//        List<Place> allReservedPlaces = new ArrayList<>();
+//
+//        List<Place> places = placeRepository.findPlacesByCountryAndCity(
+//                availabilityRequest.getCountry(),
+//                availabilityRequest.getCity(),
+//                availabilityRequest.getGuests()
+//
+//        );
+//
+//        for (Place place : places) {
+//            List<Reservation> allReservations = reservationRepository.findBetweenDates(
+//                    availabilityRequest.getCheckIn(),
+//                    availabilityRequest.getCheckOut(),
+//                    place
+//            );
+//
+//            allReservedPlaces.addAll(allReservations.stream()
+//                    .map(Reservation::getPlace)
+//                    .collect(Collectors.toList())
+//            );
+//        }
+//
+//        places.removeAll(allReservedPlaces);
+//
+//        if (!places.isEmpty()) {
+//            return places;
+//        } else {
+//            return findNearbyPlaces(availabilityRequest);
+//        }
+//    }
+
     @Override
-    public List<Place> getAvailablePlaces(AvailabilityRequest availabilityRequest) {
+    public List<Place> getAvailablePlaces(String city, String country,
+                                          Integer guests, Date checkIn, Date checkOut) {
         List<Place> allReservedPlaces = new ArrayList<>();
 
-        List<Place> places = placeRepository.findPlacesByCountryAndCity(
-                availabilityRequest.getCountry(),
-                availabilityRequest.getCity(),
-                availabilityRequest.getGuests()
-
-        );
+        List<Place> places =
+                placeRepository.findPlacesByCountryAndCity(country, city, guests);
 
         for (Place place : places) {
-            List<Reservation> allReservations = reservationRepository.findBetweenDates(
-                    availabilityRequest.getCheckIn(),
-                    availabilityRequest.getCheckOut(),
-                    place
-            );
+            List<Reservation> allReservations =
+                    reservationRepository.findBetweenDates(
+                            checkIn,
+                            checkOut,
+                            place
+                    );
 
             allReservedPlaces.addAll(allReservations.stream()
                     .map(Reservation::getPlace)
@@ -211,7 +243,8 @@ public class PlaceServiceImpl implements PlaceService {
         if (!places.isEmpty()) {
             return places;
         } else {
-            return findNearbyPlaces(availabilityRequest);
+            //return findNearbyPlaces(availabilityRequest);
+            return places;
         }
     }
 

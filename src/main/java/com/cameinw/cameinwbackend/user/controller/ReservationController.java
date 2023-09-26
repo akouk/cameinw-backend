@@ -5,6 +5,7 @@ import com.cameinw.cameinwbackend.place.model.Facility;
 import com.cameinw.cameinwbackend.place.model.Place;
 import com.cameinw.cameinwbackend.place.request.FacilityRequest;
 import com.cameinw.cameinwbackend.place.request.RegulationRequest;
+import com.cameinw.cameinwbackend.response.GenericResponse;
 import com.cameinw.cameinwbackend.user.model.Reservation;
 import com.cameinw.cameinwbackend.user.model.User;
 import com.cameinw.cameinwbackend.user.request.ReservationRequest;
@@ -28,12 +29,14 @@ public class ReservationController {
 
 
     @PostMapping("/places/{place_id}/reservations") // !!! CHECK OK!!
-    public ResponseEntity<String> makeReservation(
+    public ResponseEntity<Object> makeReservation(
             @PathVariable("place_id") Integer placeId,
             @Valid @RequestBody ReservationRequest reservationRequest) {
         try {
             Reservation createReservation = reservationService.makeReservation(placeId, reservationRequest);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Reservation successfully created.");
+            GenericResponse genericResponse = new GenericResponse();
+            genericResponse.setMessage("Reservation successfully created.");
+            return ResponseEntity.status(HttpStatus.CREATED).body(genericResponse);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (CustomUserFriendlyException ex) {

@@ -4,6 +4,7 @@ import com.cameinw.cameinwbackend.exception.CustomUserFriendlyException;
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.place.model.Place;
 import com.cameinw.cameinwbackend.place.model.Regulation;
+import com.cameinw.cameinwbackend.response.GenericResponse;
 import com.cameinw.cameinwbackend.user.model.Review;
 import com.cameinw.cameinwbackend.user.model.User;
 import com.cameinw.cameinwbackend.user.request.ReviewRequest;
@@ -35,12 +36,14 @@ public class ReviewController {
     }
 
     @PostMapping("/places/{place_id}/reviews") // !!CHECK OK!!
-    public ResponseEntity<String> createReview(
+    public ResponseEntity<Object> createReview(
             @PathVariable("place_id") Integer placeId,
             @Valid  @RequestBody ReviewRequest reviewRequest) {
         try {
             Review createReview = reviewService.createReview(placeId, reviewRequest);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Review successfully created.");
+            GenericResponse genericResponse = new GenericResponse();
+            genericResponse.setMessage("Review successfully created.");
+            return ResponseEntity.status(HttpStatus.CREATED).body(genericResponse);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (CustomUserFriendlyException ex) {
@@ -49,13 +52,15 @@ public class ReviewController {
     }
 
     @PutMapping("/users/{user_id}/reviews/{review_id}")
-    public ResponseEntity<String> updateReview(
+    public ResponseEntity<Object> updateReview(
             @PathVariable("user_id") Integer userId,
             @PathVariable("review_id") Integer reviewId,
             @RequestBody ReviewRequest reviewRequest) {
         try {
             Review updateReview = reviewService.updateReview(userId, reviewId, reviewRequest);
-            return ResponseEntity.status(HttpStatus.OK).body("Review successfully updated.");
+            GenericResponse genericResponse = new GenericResponse();
+            genericResponse.setMessage("Review successfully updated.");
+            return ResponseEntity.status(HttpStatus.OK).body(genericResponse);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (Exception ex) {
@@ -65,12 +70,14 @@ public class ReviewController {
 
     // Only the user who made the review can delete it!
     @DeleteMapping("/users/{user_id}/reviews/{review_id}")
-    public ResponseEntity<?> deleteReview(
+    public ResponseEntity<Object> deleteReview(
             @PathVariable("user_id") Integer userId,
             @PathVariable("review_id") Integer reviewId) {
         try {
             reviewService.deleteReview(userId, reviewId);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Review deleted successfully.");
+            GenericResponse genericResponse = new GenericResponse();
+            genericResponse.setMessage("Review deleted successfully.");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(genericResponse);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (CustomUserFriendlyException ex) {

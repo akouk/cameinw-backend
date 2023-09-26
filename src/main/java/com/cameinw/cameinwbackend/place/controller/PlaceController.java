@@ -6,13 +6,17 @@ import com.cameinw.cameinwbackend.place.model.Place;
 import com.cameinw.cameinwbackend.place.request.AvailabilityRequest;
 import com.cameinw.cameinwbackend.place.request.PlaceRequest;
 import com.cameinw.cameinwbackend.place.service.PlaceService;
+import com.cameinw.cameinwbackend.response.GenericResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -39,7 +43,9 @@ public class PlaceController {
         // TODO: CHECK HOW TO PRINT WHICH PROPERTY FAILED THE VALIDATION
         try {
             Place createdPlace = placeService.createPlace(placeRequest);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Place successfully created.");
+            GenericResponse genericResponse = new GenericResponse();
+            genericResponse.setMessage("Place successfully created.");
+            return ResponseEntity.status(HttpStatus.CREATED).body(genericResponse);
         } catch (CustomUserFriendlyException ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         } catch (ResourceNotFoundException ex) {
@@ -61,11 +67,12 @@ public class PlaceController {
     }
 
     @PutMapping("/{place_id}") // !!!CHECK OK!!!
-    public ResponseEntity<?> updatePlace(@PathVariable("place_id") Integer placeId, @RequestBody PlaceRequest placeRequest) {
+    public ResponseEntity<Object> updatePlace(@PathVariable("place_id") Integer placeId, @RequestBody PlaceRequest placeRequest) {
         try {
-            System.out.println("Place id in controller: " + placeId);
             Place updated = placeService.updatePlace(placeId, placeRequest);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Place successfully updated");
+            GenericResponse genericResponse = new GenericResponse();
+            genericResponse.setMessage("Place successfully updated");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(genericResponse);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (CustomUserFriendlyException ex) {
@@ -74,10 +81,12 @@ public class PlaceController {
     }
 
     @DeleteMapping("/{place_id}") // !!!CHECK OK!!!
-    public ResponseEntity<?> deletePlace(@PathVariable("place_id") Integer placeId) {
+    public ResponseEntity<Object> deletePlace(@PathVariable("place_id") Integer placeId) {
         try {
             placeService.deletePlace(placeId);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Place deleted successfully.");
+            GenericResponse genericResponse = new GenericResponse();
+            genericResponse.setMessage("Place deleted successfully.");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(genericResponse);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
@@ -92,11 +101,32 @@ public class PlaceController {
         }
     }
 
-    @GetMapping("/availability")
-    public ResponseEntity<List<Place>> getAvailablePlaces(
-            @Valid @RequestBody AvailabilityRequest availabilityRequest) {
+//    @GetMapping("/availability")
+//    public ResponseEntity<List<Place>> getAvailablePlaces(
+//            @Valid @RequestBody AvailabilityRequest availabilityRequest) {
+//
+//        List<Place> availablePlaces = placeService.getAvailablePlaces(availabilityRequest);
+//        if (availablePlaces.size()>0) {
+//            return ResponseEntity.ok(availablePlaces);
+//        } else {
+//            return ResponseEntity.noContent().build();
+//        }
+//    }
 
-        List<Place> availablePlaces = placeService.getAvailablePlaces(availabilityRequest);
+    @GetMapping("/availability/{city}/{country}/{guests}/{checkIn}/{checkOut}")
+    public ResponseEntity<List<Place>> getAvailablePlaces(
+            @PathVariable("city") String city,
+            @PathVariable("country") String country,
+            @PathVariable("guests") Integer guests,
+            @PathVariable("checkIn") @DateTimeFormat(pattern =
+                    "yyyy-MM-dd") Date checkIn,
+            @PathVariable("checkOut") @DateTimeFormat(pattern =
+                    "yyyy-MM-dd") Date checkOut
+    ) {
+
+        List<Place> availablePlaces =
+                placeService.getAvailablePlaces(city, country, guests, checkIn,
+                        checkOut);
         if (availablePlaces.size()>0) {
             return ResponseEntity.ok(availablePlaces);
         } else {

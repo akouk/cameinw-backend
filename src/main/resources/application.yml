@@ -1,9 +1,10 @@
 server:
+  address: 0.0.0.0
   # Server port
   port: 8443
-  #  ssl:
-  #    enabled: false
-  # SSL properties
+#  ssl:
+#      enabled: false
+   #SSL properties
   ssl:
     enabled: true
     key-store: classpath:cameinwcert.p12

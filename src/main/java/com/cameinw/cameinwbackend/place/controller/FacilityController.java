@@ -6,6 +6,7 @@ import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.place.model.Facility;
 import com.cameinw.cameinwbackend.place.request.FacilityRequest;
 import com.cameinw.cameinwbackend.place.service.FacilityService;
+import com.cameinw.cameinwbackend.response.GenericResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,10 +46,12 @@ public class FacilityController {
     }
 
     @PostMapping("/places/{place_id}/facilities") // !!! CHECK OK !!!
-    public ResponseEntity<?> createFacility(@PathVariable("place_id") Integer placeId, @Valid @RequestBody FacilityRequest facilityRequest) {
+    public ResponseEntity<Object> createFacility(@PathVariable("place_id") Integer placeId, @Valid @RequestBody FacilityRequest facilityRequest) {
         try {
             Facility createdFacility = facilityService.createFacility(placeId, facilityRequest);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Facility successfully created.");
+            GenericResponse genericResponse = new GenericResponse();
+            genericResponse.setMessage("Facility successfully created.");
+            return ResponseEntity.status(HttpStatus.CREATED).body(genericResponse);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }catch (ResourceAlreadyExistException ex) {
@@ -59,14 +62,16 @@ public class FacilityController {
     }
 
     @PutMapping("/places/{place_id}/facilities/{facility_id}") // !!! CHECK OK !!!
-    public ResponseEntity<?> updateFacility(
+    public ResponseEntity<Object> updateFacility(
             @PathVariable("place_id") Integer placeId,
             @PathVariable("facility_id") Integer facilityId,
             @Valid  @RequestBody FacilityRequest facilityRequest
     ) {
         try {
             Facility updatedFacility = facilityService.updateFacility(placeId, facilityId, facilityRequest);
-            return ResponseEntity.status(HttpStatus.OK).body("Facility successfully updated.");
+            GenericResponse genericResponse = new GenericResponse();
+            genericResponse.setMessage("Facility successfully updated.");
+            return ResponseEntity.status(HttpStatus.OK).body(genericResponse);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (CustomUserFriendlyException ex) {
@@ -75,10 +80,12 @@ public class FacilityController {
     }
 
     @DeleteMapping("/places/{place_id}/facilities/{facility_id}") // !!! CHECK OK !!!
-    public ResponseEntity<?> deleteFacility(@PathVariable("place_id") Integer placeId, @PathVariable("facility_id") Integer facilityId) {
+    public ResponseEntity<Object> deleteFacility(@PathVariable("place_id") Integer placeId, @PathVariable("facility_id") Integer facilityId) {
         try {
             facilityService.deleteFacility(placeId, facilityId);
-            return ResponseEntity.ok("Facility successfully deleted.");
+            GenericResponse genericResponse = new GenericResponse();
+            genericResponse.setMessage("Facility successfully deleted.");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(genericResponse);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (CustomUserFriendlyException ex) {

@@ -4,6 +4,7 @@ import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.image.model.Image;
 import com.cameinw.cameinwbackend.image.service.ImageService;
 import com.cameinw.cameinwbackend.place.model.Regulation;
+import com.cameinw.cameinwbackend.response.GenericResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -47,13 +48,29 @@ public class ImageController {
         }
     }
 
+//    @PostMapping("/users/{user_id}/image") //CHECK OK!!!!!
+//    public ResponseEntity<String> uploadUserImage(
+//            @PathVariable("user_id") Integer userId,
+//            @RequestParam("image") MultipartFile imgFile) {
+//        try {
+//            imageService.uploadUserImage(userId, imgFile);
+//            return ResponseEntity.status(HttpStatus.CREATED).body("Image uploaded successfully.");
+//        } catch (ResourceNotFoundException ex) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+//        } catch (IOException ex) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+//        }
+//    }
+
     @PostMapping("/users/{user_id}/image") //CHECK OK!!!!!
-    public ResponseEntity<String> uploadUserImage(
+    public ResponseEntity<Object> uploadUserImage(
             @PathVariable("user_id") Integer userId,
             @RequestParam("image") MultipartFile imgFile) {
         try {
             imageService.uploadUserImage(userId, imgFile);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Image uploaded successfully.");
+            GenericResponse genericResponse = new GenericResponse();
+            genericResponse.setMessage("Image uploaded successfully.");
+            return ResponseEntity.status(HttpStatus.CREATED).body(genericResponse);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (IOException ex) {
@@ -62,12 +79,14 @@ public class ImageController {
     }
 
     @PutMapping("/users/{user_id}/image") //-------check ok-----------
-    public ResponseEntity<String> updateUserImage(
+    public ResponseEntity<Object> updateUserImage(
             @PathVariable("user_id") Integer userId,
             @RequestParam("image") MultipartFile imgFile) {
         try {
             imageService.updateUserImage(userId, imgFile);
-            return ResponseEntity.status(HttpStatus.OK).body("Image updated successfully.");
+            GenericResponse genericResponse = new GenericResponse();
+            genericResponse.setMessage("Image updated successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body(genericResponse);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (IOException ex) {
@@ -82,13 +101,15 @@ public class ImageController {
     }
 
     @PostMapping("/places/{place_id}/gallery") //CHECK OK!!!!!
-    public ResponseEntity<?> uploadImagesForPlace(
+    public ResponseEntity<Object> uploadImagesForPlace(
             @PathVariable("place_id") Integer placeId,
             @RequestParam("images") MultipartFile[] imgFiles
     ) {
         try {
             imageService.uploadImagesForPlace(placeId, imgFiles);
-            return ResponseEntity.status(HttpStatus.OK).body("Images uploaded successfully.");
+            GenericResponse genericResponse = new GenericResponse();
+            genericResponse.setMessage("Images uploaded successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body(genericResponse);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (IOException ex) {
@@ -97,13 +118,15 @@ public class ImageController {
     }
 
     @PostMapping("/places/{place_id}/main-image") //CHECK OK!!!!!
-    public ResponseEntity<?> uploadMainImageForPlace(
+    public ResponseEntity<Object> uploadMainImageForPlace(
             @PathVariable("place_id") Integer placeId,
             @RequestParam("image") MultipartFile imgFile
     ) {
         try {
             imageService.uploadMainImageForPlace(placeId, imgFile);
-            return ResponseEntity.status(HttpStatus.OK).body("Main image uploaded successfully.");
+            GenericResponse genericResponse = new GenericResponse();
+            genericResponse.setMessage("Main image uploaded successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body(genericResponse);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (IOException ex) {
@@ -112,12 +135,14 @@ public class ImageController {
     }
 
     @PutMapping("/places/{place_id}/main-image") //-------check ok-----------
-    public ResponseEntity<String> updateMainImageForPlace(
+    public ResponseEntity<Object> updateMainImageForPlace(
             @PathVariable("place_id") Integer placeId,
             @RequestParam("image") MultipartFile imgFile) {
         try {
             imageService.updateMainImageForPlace(placeId, imgFile);
-            return ResponseEntity.status(HttpStatus.OK).body("Image updated successfully.");
+            GenericResponse genericResponse = new GenericResponse();
+            genericResponse.setMessage("Main image updated successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body(genericResponse);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (IOException ex) {
@@ -151,10 +176,12 @@ public class ImageController {
     }
 
     @DeleteMapping("/places/{place_id}/gallery/{image_id}") //CHECK OK!!!!!
-    public ResponseEntity<?> deletePlaceImageById(@PathVariable("place_id") Integer placeId, @PathVariable("image_id") Integer imageId) {
+    public ResponseEntity<Object> deletePlaceImageById(@PathVariable("place_id") Integer placeId, @PathVariable("image_id") Integer imageId) {
         try {
             imageService.deletePlacesImage(placeId, imageId);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Place's image deleted successfully.");
+            GenericResponse genericResponse = new GenericResponse();
+            genericResponse.setMessage("Place's image deleted successfully.");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(genericResponse);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }

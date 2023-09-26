@@ -3,6 +3,7 @@ package com.cameinw.cameinwbackend.user.service.implementation;
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.place.repository.PlaceRepository;
 import com.cameinw.cameinwbackend.place.projection.PlaceProjection;
+import com.cameinw.cameinwbackend.user.dto.UserDTO;
 import com.cameinw.cameinwbackend.user.model.User;
 import com.cameinw.cameinwbackend.user.repository.UserRepository;
 import com.cameinw.cameinwbackend.user.service.UserService;
@@ -71,6 +72,17 @@ public class UserServiceImpl implements UserService {
     private User getUserById(Integer userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+    }
+
+    private UserDTO mapUserToDTO(User user) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUserId(user.getId());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setFirstName(user.getFirstName());
+        userDTO.setLastName(user.getLastName());
+        userDTO.setPhone(userDTO.getPhone());
+
+        return userDTO;
     }
 
 }

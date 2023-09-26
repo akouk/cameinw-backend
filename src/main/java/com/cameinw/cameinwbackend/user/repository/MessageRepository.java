@@ -20,6 +20,6 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
 
     @Query("SELECT m FROM Message m " +
             "WHERE (m.sender.id = :user1Id AND m.receiver.id = :user2Id) OR (m.sender.id = :user2Id AND m.receiver.id = :user1Id) " +
-            "ORDER BY m.timestamp DESC")
+            "ORDER BY m.timestamp ASC")
     List<Message> findMessagesBetweenUsers(@Param("user1Id") Integer user1Id, @Param("user2Id") Integer user2Id);
 }
