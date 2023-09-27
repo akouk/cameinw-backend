@@ -17,12 +17,36 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * The JwtAuthenticationFilter class is responsible for intercepting incoming requests, extracting JWT tokens,
+ * and authenticating users based on the tokens.
+ *
+ * This class is annotated with:
+ * - @Component: can be automatically detected and instantiated during the Spring component scanning process.
+ * - @RequiredArgsConstructor: automatically generates a constructor for this class that injects the final fields declared in the class.
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
+    /**
+     * The JwtService responsible for generating and handling JSON Web Tokens (JWTs).
+     */
     private final JwtService jwtService;
+
+    /**
+     * The UserDetailsService responsible for loading user details for authentication.
+     */
     private final UserDetailsService userDetailsService;
+
+    /**
+     * Performs filtering for incoming requests.
+     *
+     * @param request The HTTP request.
+     * @param response The HTTP response.
+     * @param filterChain The filter chain.
+     * @throws ServletException If a servlet exception occurs.
+     * @throws IOException If an I/O exception occurs.
+     */
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,

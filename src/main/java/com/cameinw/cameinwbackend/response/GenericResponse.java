@@ -5,6 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * The GenericResponse class represents a generic response message.
+ * It is used to return simple messages in API responses.
+ */
 @Data
 @Builder
 @AllArgsConstructor

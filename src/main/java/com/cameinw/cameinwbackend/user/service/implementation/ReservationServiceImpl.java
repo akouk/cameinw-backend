@@ -10,28 +10,46 @@ import com.cameinw.cameinwbackend.user.repository.ReservationRepository;
 import com.cameinw.cameinwbackend.user.repository.UserRepository;
 import com.cameinw.cameinwbackend.user.request.ReservationRequest;
 import com.cameinw.cameinwbackend.user.service.ReservationService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * The ReservationServiceImpl class implements the ReservationService interface and provides methods for managing reservations
+ * and handling reservation-related operations.
+ *
+ * This service class is annotated with @Service to indicate that it is a Spring service component,
+ * allowing it to be automatically discovered by Spring's component scanning and dependency injection mechanism.
+ *
+ * The @RequiredArgsConstructor annotation is used here to automatically generate a constructor for this class
+ * that initializes the final fields marked with the 'final' keyword. This constructor simplifies the injection
+ * of dependencies required by this service, such as ReservationRepository, UserRepository, and PlaceRepository.
+ */
+@RequiredArgsConstructor
 @Service
 public class ReservationServiceImpl implements ReservationService {
+    /**
+     * The ReservationRepository responsible for database operations related to reservations.
+     */
     private final ReservationRepository reservationRepository;
+    /**
+     * The UserRepository responsible for database operations related to users.
+     */
     private final UserRepository userRepository;
+    /**
+     * The PlaceRepository responsible for database operations related to places.
+     */
     private final PlaceRepository placeRepository;
 
-
-    @Autowired
-    public ReservationServiceImpl(ReservationRepository reservationRepository,
-                                  UserRepository userRepository,
-                                  PlaceRepository placeRepository) {
-        this.reservationRepository = reservationRepository;
-        this.userRepository = userRepository;
-        this.placeRepository = placeRepository;
-
-    }
-
+    /**
+     * Makes a reservation for a user at a specified place based on the provided reservation request.
+     *
+     * @param placeId The ID of the place for which the reservation is being made.
+     * @param reservationRequest The reservation request containing check-in and check-out dates.
+     * @return The newly created Reservation entity representing the reservation.
+     */
     public Reservation makeReservation(Integer placeId, ReservationRequest reservationRequest) {
         Place place = getPlaceById(placeId);
         User user = getUserById(reservationRequest.getUser().getId());
@@ -41,6 +59,13 @@ public class ReservationServiceImpl implements ReservationService {
         return saveReservation(reservation);
     }
 
+    /**
+     * Retrieves a list of reservations made by a user with the specified user ID.
+     *
+     * @param userId The ID of the user for whom reservations are being retrieved.
+     * @return A list of Reservation entities made by the user.
+     * @throws ResourceNotFoundException if no reservations are found for the user.
+     */
     @Override
     public List<Reservation> getReservationsByUserId (Integer userId){
         User user = getUserById(userId);
@@ -49,6 +74,13 @@ public class ReservationServiceImpl implements ReservationService {
         return reservations;
     }
 
+    /**
+     * Retrieves a specific reservation made by a user with the specified user ID.
+     *
+     * @param userId The ID of the user who made the reservation.
+     * @param reservationId The ID of the reservation to retrieve.
+     * @return The Reservation entity representing the requested reservation.
+     */
     @Override
     public Reservation getReservationByUserId (Integer userId, Integer reservationId){
         User user = getUserById(userId);
@@ -56,6 +88,13 @@ public class ReservationServiceImpl implements ReservationService {
         return reservation;
     }
 
+    /**
+     * Retrieves a list of reservations made for a specified place based on the place ID.
+     *
+     * @param placeId The ID of the place for which reservations are being retrieved.
+     * @return A list of Reservation entities made for the place.
+     * @throws ResourceNotFoundException if no reservations are found for the place.
+     */
     @Override
     public List<Reservation> getReservationsByPlaceId (Integer placeId){
         Place place = getPlaceById(placeId);
@@ -64,6 +103,13 @@ public class ReservationServiceImpl implements ReservationService {
         return reservations;
     }
 
+    /**
+     * Retrieves a specific reservation made for a specified place based on the place ID and reservation ID.
+     *
+     * @param placeId The ID of the place for which the reservation was made.
+     * @param reservationId The ID of the reservation to retrieve.
+     * @return The Reservation entity representing the requested reservation for the specified place.
+     */
     @Override
     public Reservation getReservationByPlaceId (Integer placeId, Integer reservationId){
         Place place = getPlaceById(placeId);
@@ -71,33 +117,62 @@ public class ReservationServiceImpl implements ReservationService {
         return reservation;
     }
 
+    /**
+     * Retrieves a Place entity by its unique ID.
+     *
+     * @param placeId The ID of the place to retrieve.
+     * @return The Place entity if found.
+     * @throws ResourceNotFoundException if the place with the given ID is not found.
+     */
     private Place getPlaceById(Integer placeId) {
         return placeRepository.findById(placeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found."));
     }
 
+    /**
+     * Retrieves a User entity by its unique ID.
+     *
+     * @param userId The ID of the user to retrieve.
+     * @return The User entity if found.
+     * @throws ResourceNotFoundException if the user with the given ID is not found.
+     */
     private User getUserById(Integer userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
     }
 
+    /**
+     * Retrieves a Reservation entity by its unique ID.
+     *
+     * @param reservationId The ID of the place to retrieve.
+     * @return The Reservation entity if found.
+     * @throws ResourceNotFoundException if the reservation with the given ID is not found.
+     */
     private Reservation getReservationById(Integer reservationId) {
         return reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Reservation not found."));
     }
 
+    /**
+     * Checks if there are reservations found for a resource (e.g., user or place).
+     *
+     * @param reservations The list of reservations to check.
+     * @throws ResourceNotFoundException if no reservations are found for the resource.
+     */
     public void checkIfReservationsExistForResource(List<Reservation> reservations) {
         if (reservations.isEmpty()) {
             throw new ResourceNotFoundException("No reservations found.");
         }
     }
 
-
-    private boolean isUserOwnerOfPlace(Place place, Integer userId) {
-        User placeOwner = place.getUser();
-        return placeOwner != null && placeOwner.getId().equals(userId);
-    }
-
+    /**
+     * Checks if a reservation request is valid, i.e., there are no conflicting reservations
+     * and the check-in date is before the check-out date.
+     *
+     * @param reservationRequest The reservation request to validate.
+     * @param place The place for which the reservation is being made.
+     * @return true if the reservation is valid, false otherwise.
+     */
     private boolean isValidReservation(ReservationRequest reservationRequest, Place place) {
         List<Reservation> existingReservations = reservationRepository.findBetweenDates(
                 reservationRequest.getCheckIn(),
@@ -108,12 +183,27 @@ public class ReservationServiceImpl implements ReservationService {
                 && reservationRequest.getCheckIn().compareTo(reservationRequest.getCheckOut()) < 0;
     }
 
+    /**
+     * Checks if a reservation request is valid for the specified place.
+     *
+     * @param reservationRequest The reservation request to validate.
+     * @param place The place for which the reservation is being made.
+     * @throws CustomUserFriendlyException if the reservation is not valid.
+     */
     private void checkReservationValidation(ReservationRequest reservationRequest, Place place) {
         if (!isValidReservation(reservationRequest, place)) {
             throw new CustomUserFriendlyException("Failed to create reservation.");
         }
     }
 
+    /**
+     * Creates a new reservation based on the provided ReservationRequest, place, and user.
+     *
+     * @param reservationRequest The reservation request containing check-in and check-out dates.
+     * @param place The place for which the reservation is being made.
+     * @param user The user making the reservation.
+     * @return The newly created Reservation entity.
+     */
     private Reservation createReservation(ReservationRequest reservationRequest, Place place, User user) {
         return Reservation.builder()
                 .checkIn(reservationRequest.getCheckIn())
@@ -123,6 +213,12 @@ public class ReservationServiceImpl implements ReservationService {
                 .build();
     }
 
+    /**
+     * Saves a Reservation entity to the database.
+     *
+     * @param reservation The Reservation entity to be saved.
+     * @return The saved Reservation entity.
+     */
     private Reservation saveReservation(Reservation reservation) {
         return reservationRepository.save(reservation);
     }
