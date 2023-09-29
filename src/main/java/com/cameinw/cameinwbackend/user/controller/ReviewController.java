@@ -5,6 +5,7 @@ import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.place.model.Place;
 import com.cameinw.cameinwbackend.place.model.Regulation;
 import com.cameinw.cameinwbackend.response.GenericResponse;
+import com.cameinw.cameinwbackend.user.dto.UserDTO;
 import com.cameinw.cameinwbackend.user.model.Review;
 import com.cameinw.cameinwbackend.user.model.User;
 import com.cameinw.cameinwbackend.user.request.ReviewRequest;
@@ -47,6 +48,25 @@ public class ReviewController {
         try {
             List<Review> reviews = reviewService.getAllReviews();
             return new ResponseEntity<>(reviews, HttpStatus.OK);
+        } catch (ResourceNotFoundException ex) {
+            genericResponse.setMessage(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(genericResponse);
+        }
+    }
+
+    /**
+     * Retrieves the user who made a specific review by review ID.
+     *
+     * @param reviewId The ID of the review for which to find the user.
+     * @return A ResponseEntity containing the user data if found, or an error response if not found.
+     * @throws ResourceNotFoundException if the review or user is not found.
+     */
+    @GetMapping("/reviews/{review_id}/user")
+    public ResponseEntity<Object> getUserByReviewId(@PathVariable("review_id") Integer reviewId) {
+        GenericResponse genericResponse = new GenericResponse();
+        try {
+            UserDTO UserDTO = reviewService.getUserByReviewId(reviewId);
+            return ResponseEntity.status(HttpStatus.OK).body(UserDTO);
         } catch (ResourceNotFoundException ex) {
             genericResponse.setMessage(ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(genericResponse);
@@ -217,4 +237,5 @@ public class ReviewController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(genericResponse);
         }
     }
+
 }

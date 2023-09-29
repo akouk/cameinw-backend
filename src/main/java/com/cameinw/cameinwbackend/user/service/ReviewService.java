@@ -1,5 +1,6 @@
 package com.cameinw.cameinwbackend.user.service;
 
+import com.cameinw.cameinwbackend.user.dto.UserDTO;
 import com.cameinw.cameinwbackend.user.model.Review;
 import com.cameinw.cameinwbackend.user.request.ReviewRequest;
 
@@ -16,6 +17,14 @@ public interface ReviewService {
      * @return A list of Review objects.
      */
     List<Review> getAllReviews();
+
+    /**
+     * Retrieves the user who made a specific review by review ID.
+     *
+     * @param reviewId The ID of the review for which to find the user.
+     * @return A UserDTO object containing the user data if found, or null if not found.
+     */
+    UserDTO getUserByReviewId(Integer reviewId);
 
     /**
      * Create a new review for a place.

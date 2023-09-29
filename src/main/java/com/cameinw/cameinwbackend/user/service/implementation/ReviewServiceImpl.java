@@ -4,6 +4,7 @@ import com.cameinw.cameinwbackend.exception.CustomUserFriendlyException;
 import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.place.model.Place;
 import com.cameinw.cameinwbackend.place.repository.PlaceRepository;
+import com.cameinw.cameinwbackend.user.dto.UserDTO;
 import com.cameinw.cameinwbackend.user.model.Reservation;
 import com.cameinw.cameinwbackend.user.model.Review;
 import com.cameinw.cameinwbackend.user.model.User;
@@ -12,6 +13,7 @@ import com.cameinw.cameinwbackend.user.repository.ReviewRepository;
 import com.cameinw.cameinwbackend.user.repository.UserRepository;
 import com.cameinw.cameinwbackend.user.request.ReviewRequest;
 import com.cameinw.cameinwbackend.user.service.ReviewService;
+import com.cameinw.cameinwbackend.utilities.MapToDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +65,22 @@ public class ReviewServiceImpl implements ReviewService {
         List<Review> reviews = reviewRepository.findAll();
         checkIfReviewsWereFound(reviews);
         return reviews;
+    }
+
+    /**
+     * Retrieves the user who made a specific review by review ID.
+     *
+     * @param reviewId The ID of the review for which to find the user.
+     * @return A UserDTO object containing the user data if found, or null if not found.
+     * @throws ResourceNotFoundException if the review is not found.
+     */
+    @Override
+    public UserDTO getUserByReviewId(Integer reviewId) {
+        Review review = getReviewById(reviewId);
+        User user = review.getUser();
+        UserDTO userDTO = MapToDTO.mapUserToDTO(user);
+
+        return userDTO;
     }
 
     /**
@@ -330,4 +348,5 @@ public class ReviewServiceImpl implements ReviewService {
     private Review saveReview(Review review) {
         return reviewRepository.save(review);
     }
+
 }
