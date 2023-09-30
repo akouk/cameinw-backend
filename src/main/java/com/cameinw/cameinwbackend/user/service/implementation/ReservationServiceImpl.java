@@ -118,6 +118,19 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     /**
+     * Retrieves the place associated with a specific reservation by reservation ID.
+     *
+     * @param reservationId The ID of the reservation for which to retrieve the place.
+     * @return The Place associated with the reservation.
+     * @throws ResourceNotFoundException if the reservation or place is not found.
+     */
+    @Override
+    public Place getPlaceByReservationId(Integer reservationId) {
+        Reservation reservation = getReservationById(reservationId);
+        return reservation.getPlace();
+    }
+
+    /**
      * Retrieves a Place entity by its unique ID.
      *
      * @param placeId The ID of the place to retrieve.

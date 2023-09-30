@@ -1,5 +1,6 @@
 package com.cameinw.cameinwbackend.user.service;
 
+import com.cameinw.cameinwbackend.place.model.Place;
 import com.cameinw.cameinwbackend.user.model.Reservation;
 import com.cameinw.cameinwbackend.user.request.ReservationRequest;
 
@@ -52,4 +53,13 @@ public interface ReservationService {
      * @return The Reservation object associated with the place and reservationId.
      */
     Reservation getReservationByPlaceId(Integer placeId, Integer reservationId);
+
+    /**
+     * Retrieve the place associated with a specific reservation by reservation ID.
+     *
+     * @param reservationId The ID of the reservation for which to retrieve the place.
+     * @return The Place associated with the reservation.
+     * @throws ResourceNotFoundException if the reservation or place is not found.
+     */
+    Place getPlaceByReservationId(Integer reservationId);
 }

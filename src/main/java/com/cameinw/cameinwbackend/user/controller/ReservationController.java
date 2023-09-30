@@ -148,4 +148,24 @@ public class ReservationController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(genericResponse);
         }
     }
+
+    /**
+     * Retrieves the place associated with a specific reservation by reservation ID.
+     *
+     * @param reservationId The ID of the reservation for which to retrieve the place.
+     * @return A ResponseEntity containing the Place data if found, or an error response if not found.
+     * @throws ResourceNotFoundException if the reservation or place is not found.
+     */
+    @GetMapping("/reservations/{reservation_id}/place")
+    public ResponseEntity<Object> getPlaceByReservationId(
+            @PathVariable("reservation_id") Integer reservationId) {
+        GenericResponse genericResponse = new GenericResponse();
+        try {
+            Place place = reservationService.getPlaceByReservationId(reservationId);
+            return ResponseEntity.status(HttpStatus.OK).body(place);
+        } catch (ResourceNotFoundException ex) {
+            genericResponse.setMessage(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(genericResponse);
+        }
+    }
 }

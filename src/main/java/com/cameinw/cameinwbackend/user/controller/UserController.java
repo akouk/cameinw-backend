@@ -146,7 +146,7 @@ public class UserController {
      *
      * @return A ResponseEntity with a valid token response.
      */
-    @GetMapping("/valid-User")
+    @GetMapping("/validUser")
     public ResponseEntity<String> checkValidUserToken() {
 
         return ResponseEntity.ok("{\"token\":\"valid\"}");
