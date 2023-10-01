@@ -51,4 +51,13 @@ public interface UserService {
      */
     Optional<List<PlaceProjection>> getPlacesByUserId(Integer userId);
 
+    /**
+     * Retrieve the role of a user by their user ID.
+     *
+     * @param userId The ID of the user.
+     * @return The role of the user.
+     * @throws ResourceNotFoundException if the user is not found.
+     */
+    String getUserRoleByUserId(Integer userId);
+
 }

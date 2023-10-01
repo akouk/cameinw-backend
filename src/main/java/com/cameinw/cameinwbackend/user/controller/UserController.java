@@ -151,4 +151,25 @@ public class UserController {
 
         return ResponseEntity.ok("{\"token\":\"valid\"}");
     }
+    /**
+     * Retrieves the role of a user by their ID.
+     *
+     * @param userId The ID of the user.
+     * @return A ResponseEntity containing the user's role if found, or an error response if not found.
+     * @throws ResourceNotFoundException if the user is not found.
+     */
+    @GetMapping("/{user_id}/role")
+    public ResponseEntity<Object> getUserRoleById(@PathVariable("user_id") Integer userId) {
+        GenericResponse genericResponse = new GenericResponse();
+        try {
+            String role = userService.getUserRoleByUserId(userId);
+            genericResponse.setMessage(role);
+            return ResponseEntity.status(HttpStatus.OK).body(genericResponse);
+        } catch (ResourceNotFoundException ex) {
+            genericResponse.setMessage(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(genericResponse);
+        }
+    }
+
+
 }

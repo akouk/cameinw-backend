@@ -4,6 +4,7 @@ import com.cameinw.cameinwbackend.exception.ResourceNotFoundException;
 import com.cameinw.cameinwbackend.place.model.Place;
 import com.cameinw.cameinwbackend.place.repository.PlaceRepository;
 import com.cameinw.cameinwbackend.place.projection.PlaceProjection;
+import com.cameinw.cameinwbackend.user.enums.Role;
 import com.cameinw.cameinwbackend.user.model.User;
 import com.cameinw.cameinwbackend.user.repository.UserRepository;
 import com.cameinw.cameinwbackend.user.service.UserService;
@@ -132,6 +133,13 @@ public class UserServiceImpl implements UserService {
         if (users.isEmpty()) {
             throw new ResourceNotFoundException("No users were found.");
         }
+    }
+
+    @Override
+    public String getUserRoleByUserId(Integer userId) {
+        User user = getUserById(userId);
+        Role role = user.getRole();
+        return role.toString();
     }
 
 }
