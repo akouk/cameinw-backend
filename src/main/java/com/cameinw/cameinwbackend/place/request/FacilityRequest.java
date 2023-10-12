@@ -21,17 +21,17 @@ public class FacilityRequest {
     /**
      * Indicates whether the place has free parking.
      */
-    private boolean hasFreeParking;
+    private Boolean hasFreeParking;
 
     /**
      * Indicates whether the place is non-smoking.
      */
-    private boolean isNonSmoking;
+    private Boolean nonSmoking;
 
     /**
      * Indicates whether the place has free Wi-Fi.
      */
-    private boolean hasFreeWiFi;
+    private Boolean hasFreeWiFi;
 
     /**
      * Indicates whether breakfast is provided at the place.
@@ -42,12 +42,12 @@ public class FacilityRequest {
     /**
      * Indicates whether the place has a balcony.
      */
-    private boolean hasbalcony;
+    private Boolean hasbalcony;
 
     /**
      * Indicates whether the place has a swimming pool.
      */
-    private boolean hasSwimmingPool;
+    private Boolean hasSwimmingPool;
 
     /**
      * The user who defines these facility details for their place.

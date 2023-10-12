@@ -52,7 +52,7 @@ public class Facility {
      * This field is mapped to the "non_smoking" column in the "facilities" table.
      */
     @Column(name = "non_smoking")
-    private boolean isNonSmoking;
+    private boolean nonSmoking;
 
     /**
      * Indicates whether the place has free Wi-Fi.

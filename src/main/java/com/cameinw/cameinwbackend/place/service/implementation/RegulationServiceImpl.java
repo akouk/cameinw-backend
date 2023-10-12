@@ -254,10 +254,10 @@ public class RegulationServiceImpl implements RegulationService {
                 .departureTime(regulationRequest.getDepartureTime())
                 .cancellationPolity(regulationRequest.getCancellationPolicy())
                 .paymentMethod(regulationRequest.getPaymentMethod())
-                .ageRestriction(regulationRequest.isAgeRestriction())
-                .arePetsAllowed(regulationRequest.isArePetsAllowed())
-                .areEventsAllowed(regulationRequest.isAreEventsAllowed())
-                .smokingAllowed(regulationRequest.isSmokingAllowed())
+                .ageRestriction(regulationRequest.getAgeRestriction())
+                .arePetsAllowed(regulationRequest.getArePetsAllowed())
+                .areEventsAllowed(regulationRequest.getAreEventsAllowed())
+                .smokingAllowed(regulationRequest.getSmokingAllowed())
                 .quietHours(regulationRequest.getQuietHours())
                 .place(place)
                 .build();
@@ -282,17 +282,17 @@ public class RegulationServiceImpl implements RegulationService {
         if (regulationRequest.getPaymentMethod() != null) {
             regulation.setPaymentMethod(regulationRequest.getPaymentMethod());
         }
-        if (regulationRequest.isAgeRestriction() != false) {
-            regulation.setAgeRestriction(regulationRequest.isAgeRestriction());
+        if (regulationRequest.getAgeRestriction() != null) {
+            regulation.setAgeRestriction(regulationRequest.getAgeRestriction());
         }
-        if (regulationRequest.isArePetsAllowed() != false) {
-            regulation.setArePetsAllowed(regulationRequest.isArePetsAllowed());
+        if (regulationRequest.getArePetsAllowed() != null) {
+            regulation.setArePetsAllowed(regulationRequest.getArePetsAllowed());
         }
-        if (regulationRequest.isAreEventsAllowed() != false) {
-            regulation.setAreEventsAllowed(regulationRequest.isAreEventsAllowed());
+        if (regulationRequest.getAreEventsAllowed() != null) {
+            regulation.setAreEventsAllowed(regulationRequest.getAreEventsAllowed());
         }
-        if (regulationRequest.isSmokingAllowed() != false) {
-            regulation.setSmokingAllowed(regulationRequest.isSmokingAllowed());
+        if (regulationRequest.getSmokingAllowed() != null) {
+            regulation.setSmokingAllowed(regulationRequest.getSmokingAllowed());
         }
         if (regulationRequest.getQuietHours() != null) {
             regulation.setQuietHours(regulationRequest.getQuietHours());

@@ -48,22 +48,22 @@ public class RegulationRequest {
     /**
      * Indicates whether there is an age restriction for the place.
      */
-    private boolean ageRestriction;
+    private Boolean ageRestriction;
 
     /**
      * Indicates whether pets are allowed at the place.
      */
-    private boolean arePetsAllowed;
+    private Boolean arePetsAllowed;
 
     /**
      * Indicates whether events are allowed at the place.
      */
-    private boolean areEventsAllowed;
+    private Boolean areEventsAllowed;
 
     /**
      * Indicates whether smoking is allowed at the place.
      */
-    private boolean smokingAllowed;
+    private Boolean smokingAllowed;
 
     /**
      * The quiet hours regulation for the place.

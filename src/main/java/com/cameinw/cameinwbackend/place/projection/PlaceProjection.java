@@ -83,5 +83,5 @@ public interface PlaceProjection {
      *
      * @return The property type of the place.
      */
-    Enum<PropertyType> getPropertyType();
+    String getType();
 }

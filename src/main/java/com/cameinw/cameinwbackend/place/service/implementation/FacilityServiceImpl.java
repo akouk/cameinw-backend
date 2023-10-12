@@ -249,12 +249,12 @@ public class FacilityServiceImpl implements FacilityService {
      */
     private Facility createNewFacility(FacilityRequest facilityRequest, Place place) {
         return Facility.builder()
-                .hasFreeParking(facilityRequest.isHasFreeParking())
-                .isNonSmoking(facilityRequest.isNonSmoking())
-                .hasFreeWiFi(facilityRequest.isHasFreeWiFi())
+                .hasFreeParking(facilityRequest.getHasFreeParking())
+                .nonSmoking(facilityRequest.getNonSmoking())
+                .hasFreeWiFi(facilityRequest.getHasFreeWiFi())
                 .hasbreakfast(facilityRequest.getHasbreakfast())
-                .hasbalcony(facilityRequest.isHasbalcony())
-                .hasSwimmingPool(facilityRequest.isHasSwimmingPool())
+                .hasbalcony(facilityRequest.getHasbalcony())
+                .hasSwimmingPool(facilityRequest.getHasSwimmingPool())
                 .place(place)
                 .build();
     }
@@ -266,23 +266,23 @@ public class FacilityServiceImpl implements FacilityService {
      * @param facility The existing Facility instance to update.
      */
     private void copyOnlyNonNullProperties(FacilityRequest facilityRequest, Facility facility) {
-        if (facilityRequest.isHasFreeParking() != false) {
-            facility.setHasFreeParking(facilityRequest.isHasFreeParking());
+        if (facilityRequest.getHasFreeParking() != null) {
+            facility.setHasFreeParking(facilityRequest.getHasFreeParking());
         }
-        if (facilityRequest.isNonSmoking() != false) {
-            facility.setNonSmoking(facilityRequest.isNonSmoking());
+        if (facilityRequest.getNonSmoking() != null) {
+            facility.setNonSmoking(facilityRequest.getNonSmoking());
         }
-        if (facilityRequest.isHasFreeWiFi() != false) {
-            facility.setHasFreeWiFi(facilityRequest.isHasFreeWiFi());
+        if (facilityRequest.getHasFreeWiFi() != null) {
+            facility.setHasFreeWiFi(facilityRequest.getHasFreeWiFi());
         }
         if (facilityRequest.getHasbreakfast() != null) {
             facility.setHasbreakfast(facilityRequest.getHasbreakfast());
         }
-        if (facilityRequest.isHasbalcony() != false) {
-            facility.setHasbalcony(facilityRequest.isHasbalcony());
+        if (facilityRequest.getHasbalcony() != null) {
+            facility.setHasbalcony(facilityRequest.getHasbalcony());
         }
-        if (facilityRequest.isHasSwimmingPool() != false) {
-            facility.setHasSwimmingPool(facilityRequest.isHasSwimmingPool());
+        if (facilityRequest.getHasSwimmingPool() != null) {
+            facility.setHasSwimmingPool(facilityRequest.getHasSwimmingPool());
         }
     }
 
