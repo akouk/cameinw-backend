@@ -56,7 +56,6 @@ public interface UserService {
      *
      * @param userId The ID of the user.
      * @return The role of the user.
-     * @throws ResourceNotFoundException if the user is not found.
      */
     String getUserRoleByUserId(Integer userId);
 
